@@ -1,26 +1,25 @@
 """Command line parser."""
 
+import typing as t
 from queue import Queue
-from typing import Any, Dict, List, Optional, Tuple
 
-from clea.context import Context
 from clea.exceptions import ArgumentsMissing, ExtraArgumentProvided
 from clea.params import ChoiceByFlag, Parameter
 
 
-Argv = List[str]
-Args = List[Any]
-Kwargs = Dict[str, Any]
+Argv = t.List[str]
+Args = t.List[t.Any]
+Kwargs = t.Dict[str, t.Any]
 
-ParsedCommandArgs = Tuple[Args, Kwargs, bool]
-ParsedGroupArgs = Tuple[Args, Kwargs, bool, Any, Args]
+ParsedCommandArgs = t.Tuple[Args, Kwargs, bool]
+ParsedGroupArgs = t.Tuple[Args, Kwargs, bool, t.Any, Args]
 
 
 class BaseParser:
     """Argument parser."""
 
     _args: Queue[Parameter]
-    _kwargs: Dict[str, Parameter]
+    _kwargs: t.Dict[str, Parameter]
 
     def __init__(self) -> None:
         """Initialize object."""
@@ -28,15 +27,15 @@ class BaseParser:
         self._kwargs = {}
         self._args = Queue()
 
-    def get_arg_vars(self) -> List[str]:
-        """Get a list of metavars."""
+    def get_arg_vars(self) -> t.List[str]:
+        """Get a t.list of metavars."""
         missing = []
         while not self._args.empty():
             missing.append(self._args.get().var)
         return missing
 
     def _raise_missing_args(self) -> None:
-        """Raise if `args` list has parameter defintions"""
+        """Raise if `args` t.list has parameter defintions"""
         missing = []
         while not self._args.empty():
             missing.append(self._args.get().metavar)
@@ -62,7 +61,9 @@ class BaseParser:
         if defintion.default is None:
             self._args.put(defintion)
 
-    def parse(self, argv: Argv, commands: Optional[Dict[str, Any]] = None) -> Tuple:
+    def parse(  # pylint: disable=unused-argument
+        self, argv: Argv, commands: t.Optional[t.Dict[str, t.Any]] = None
+    ) -> t.Tuple:
         """Parse and return kwargs."""
         return NotImplemented
 
@@ -70,8 +71,8 @@ class BaseParser:
 class CommandParser(BaseParser):
     """Argument parser for command."""
 
-    def parse(
-        self, argv: Argv, commands: Optional[Dict[str, Any]] = None
+    def parse(  # pylint: disable=too-many-branches
+        self, argv: Argv, commands: t.Optional[t.Dict[str, t.Any]] = None
     ) -> ParsedCommandArgs:
         """Parse and return kwargs."""
         args: Args = []
@@ -113,19 +114,20 @@ class CommandParser(BaseParser):
 class GroupParser(BaseParser):
     """Argument parser."""
 
-    def parse(
-        self, argv: Argv, commands: Optional[Dict[str, Any]] = None
-    ) -> Tuple[Args, Kwargs, bool, Any, Args]:
+    def parse(  # pylint: disable=too-many-branches
+        self, argv: Argv, commands: t.Optional[t.Dict[str, t.Any]] = None
+    ) -> t.Tuple[Args, Kwargs, bool, t.Any, Args]:
         """Parse and return kwargs."""
         commands = commands or {}
         args: Args = []
         kwargs: Kwargs = {}
         sub_argv: Args = []
-        sub_command: Any = None
+        sub_command: t.Any = None
         for i, arg in enumerate(argv):
             sub_command = commands.get(arg)
             if sub_command is not None:
-                sub_argv = argv[i + 1 :]
+                _i = i + 1
+                sub_argv = argv[_i:]
                 break
             if arg == "--help":
                 return args, kwargs, True, None, argv

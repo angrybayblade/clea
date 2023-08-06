@@ -2,7 +2,7 @@
 
 import inspect
 import itertools
-from typing import Any, Callable, Dict, Tuple
+import typing as t
 
 from typing_extensions import Annotated
 
@@ -10,8 +10,8 @@ from clea.params import Parameter
 
 
 def get_function_metadata(
-    f: Callable,
-) -> Tuple[Dict[str, Any], Dict[str, Annotated[Any, Parameter]]]:
+    f: t.Callable,
+) -> t.Tuple[t.Dict[str, t.Any], t.Dict[str, Annotated[t.Any, Parameter]]]:
     """
     Get argument mappings for a given function.
 
@@ -20,7 +20,6 @@ def get_function_metadata(
     :return: A dictionary mapping argument names to their default values and annotations.
     :rtype: dict
     """
-    # TODO: Optimise
     specs = inspect.getfullargspec(f)
     args = specs.args.copy()
     defaults = itertools.chain(

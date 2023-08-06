@@ -1,22 +1,21 @@
 [tool.poetry]
 name = "clea"
-version = "0.1.0"
-description = ""
-authors = ["angrybayblade <vptl185@gmail.com>"]
+version = "0.1.0.rc0"
+description = "Framework for writing CLI application quickly"
 readme = "README.md"
+authors = ["angrybayblade <vptl185@gmail.com>"]
 packages = [{include = "clea"}]
 
 [tool.poetry.dependencies]
-python = "^3.8"
-
+python = ">=3.8,<4.0"
 
 [tool.poetry.group.dev.dependencies]
 isort = "==5.12.0"
 black = "==23.3.0"
 mypy = "==1.3.0"
-tox = "==4.6.3"
+tox = "==3.28.0"
 pylint = "==2.17.4"
-flake8 = "==6.0.0"
+flake8 = "5.0.0"
 
 [build-system]
 requires = ["poetry-core"]

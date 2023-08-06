@@ -1,34 +1,34 @@
 """Parameter definition."""
 
+import typing as t
 from enum import Enum
 from pathlib import Path
-from typing import Any, Generic, List, Optional, Type, TypeVar, cast, get_args
 
 from clea.context import Context
 from clea.exceptions import ParsingError
 
 
-ParameterType = TypeVar("ParameterType")
+ParameterType = t.TypeVar("ParameterType")
 
 HELP_COL_LENGTH = 30
 
 
-class Parameter(Generic[ParameterType]):
+class Parameter(t.Generic[ParameterType]):
     """Callable parameter."""
 
-    _name: Optional[str]
-    _type: Type
+    _name: t.Optional[str]
+    _type: t.Type
 
-    container: List
+    container: t.List
     is_container: bool = False
 
     def __init__(
         self,
-        short_flag: Optional[str] = None,
-        long_flag: Optional[str] = None,
-        default: Optional[ParameterType] = None,
-        help: Optional[str] = None,
-        env: Optional[str] = None,
+        short_flag: t.Optional[str] = None,
+        long_flag: t.Optional[str] = None,
+        default: t.Optional[ParameterType] = None,
+        help: t.Optional[str] = None,  # pylint: disable=redefined-builtin
+        env: t.Optional[str] = None,
     ) -> None:
         """Initialize object."""
         self._name = None
@@ -39,10 +39,10 @@ class Parameter(Generic[ParameterType]):
         self._help = help
         self._env = env
 
-        (self._type,) = get_args(self.__orig_bases__[0])  # type: ignore
+        (self._type,) = t.get_args(self.__orig_bases__[0])  # type: ignore # pylint: disable=no-member
 
     @property
-    def short_flag(self) -> Optional[str]:
+    def short_flag(self) -> t.Optional[str]:
         """FLag"""
         return self._short_flag
 
@@ -51,10 +51,10 @@ class Parameter(Generic[ParameterType]):
         """FLag"""
         if self._long_flag is not None:
             return self._long_flag
-        return "--" + cast(str, self.name).replace("_", "-")
+        return "--" + t.cast(str, self.name).replace("_", "-")
 
     @property
-    def default(self) -> Optional[ParameterType]:
+    def default(self) -> t.Optional[ParameterType]:
         """Return default value."""
         return self._default
 
@@ -78,19 +78,19 @@ class Parameter(Generic[ParameterType]):
     @property
     def metavar(self) -> str:
         """Metavar name"""
-        return f"<{self.name.upper()} type={self._type.__name__}>"
+        return f"<{self.name.upper()} t.type={self._type.__name__}>"
 
     @property
     def var(self) -> str:
         """Var name"""
         return self.name.upper()
 
-    def parse(self, value: Any) -> ParameterType:
+    def parse(self, value: t.Any) -> ParameterType:
         """
         Parse the object.
 
         :param value: The value to be parsed.
-        :type value: Any
+        :type value: t.Any
         :return: The parsed object.
         :rtype: ParameterType
         """
@@ -98,7 +98,7 @@ class Parameter(Generic[ParameterType]):
             return self._type(value)
         except ValueError as e:
             raise ParsingError(
-                f"Error parsing value for {self.metavar}; Provided value={value}; Expected type={self._type.__name__}"
+                f"Error parsing value for {self.metavar}; Provided value={value}; Expected t.type={self._type.__name__}"
             ) from e
 
     def help(self) -> str:
@@ -106,7 +106,7 @@ class Parameter(Generic[ParameterType]):
         if self.short_flag is not None:
             help_string = f"{self.short_flag}, "
         else:
-            help_string = f""
+            help_string = ""
         help_string += f"{self.long_flag}"
         if self._help is not None:
             help_string += " " * (HELP_COL_LENGTH - len(help_string))
@@ -135,42 +135,42 @@ class Boolean(Parameter[bool]):
 
     def __init__(
         self,
-        short_flag: Optional[str] = None,
-        long_flag: Optional[str] = None,
+        short_flag: t.Optional[str] = None,
+        long_flag: t.Optional[str] = None,
         default: bool = False,
-        help: Optional[str] = None,
-        env: Optional[str] = None,
+        help: t.Optional[str] = None,  # pylint: disable=redefined-builtin
+        env: t.Optional[str] = None,
     ) -> None:
         super().__init__(short_flag, long_flag, default, help, env)
 
-    def parse(self, value: Any) -> bool:
+    def parse(self, value: t.Any) -> bool:
         """Parse result"""
         return not self.default
 
 
-class StringList(Parameter[List[str]]):
+class StringList(Parameter[t.List[str]]):
     """String list parameter."""
 
-    container: List[str]
+    container: t.List[str]
     is_container: bool = True
 
     def __init__(
         self,
-        short_flag: Optional[str] = None,
-        long_flag: Optional[str] = None,
-        default: Optional[List[str]] = None,
-        help: Optional[str] = None,
-        env: Optional[str] = None,
+        short_flag: t.Optional[str] = None,
+        long_flag: t.Optional[str] = None,
+        default: t.Optional[t.List[str]] = None,
+        help: t.Optional[str] = None,  # pylint: disable=redefined-builtin
+        env: t.Optional[str] = None,
     ) -> None:
         super().__init__(short_flag, long_flag, default or [], help, env)
         self.container = []
 
-    def parse(self, value: Any) -> List[str]:
+    def parse(self, value: t.Any) -> t.List[str]:
         """
-        Parse as list of strings.
+        Parse as t.list of strings.
 
         :param value: The value to be parsed.
-        :type value: Any
+        :type value: t.Any
         :return: The parsed object.
         :rtype: ParameterType
         """
@@ -182,7 +182,7 @@ class StringList(Parameter[List[str]]):
         if self.short_flag is not None:
             help_string = f"{self.short_flag}, "
         else:
-            help_string = f""
+            help_string = ""
         help_string += f"{self.long_flag}"
         if self._help is not None:
             help_string += " " * (HELP_COL_LENGTH - len(help_string))
@@ -195,22 +195,22 @@ class Choice(Parameter[Enum]):
 
     def __init__(
         self,
-        enum: Type[Enum],
-        short_flag: Optional[str] = None,
-        long_flag: Optional[str] = None,
-        default: Optional[Enum] = None,
-        help: Optional[str] = None,
-        env: Optional[str] = None,
+        enum: t.Type[Enum],
+        short_flag: t.Optional[str] = None,
+        long_flag: t.Optional[str] = None,
+        default: t.Optional[Enum] = None,
+        help: t.Optional[str] = None,  # pylint: disable=redefined-builtin
+        env: t.Optional[str] = None,
     ) -> None:
         super().__init__(short_flag, long_flag, default, help, env)
         self.enum = enum
 
-    def parse(self, value: Any) -> Enum:
+    def parse(self, value: t.Any) -> Enum:
         """
         Parse choice.
 
         :param value: The value to be parsed.
-        :type value: Any
+        :type value: t.Any
         :return: The parsed object.
         :rtype: ParameterType
         """
@@ -227,7 +227,7 @@ class Choice(Parameter[Enum]):
         if self.short_flag is not None:
             help_string = f"{self.short_flag}, "
         else:
-            help_string = f""
+            help_string = ""
         help_string += f"{self.long_flag}"
         choices = "|".join(list(map(lambda x: x.value, self.enum)))
         help_string += f"  [{choices}]"
@@ -248,10 +248,10 @@ class ChoiceByFlag(Parameter[Enum]):
 
     def __init__(
         self,
-        enum: Type[Enum],
-        default: Optional[Enum] = None,
-        help: Optional[str] = None,
-        env: Optional[str] = None,
+        enum: t.Type[Enum],
+        default: t.Optional[Enum] = None,
+        help: t.Optional[str] = None,  # pylint: disable=redefined-builtin
+        env: t.Optional[str] = None,
     ) -> None:
         super().__init__(None, None, default, help, env)
         self.enum = enum
@@ -265,7 +265,7 @@ class ChoiceByFlag(Parameter[Enum]):
         Parse choice.
 
         :param value: The value to be parsed.
-        :type value: Any
+        :type value: t.Any
         :return: The parsed object.
         :rtype: ParameterType
         """
@@ -298,24 +298,24 @@ class File(Parameter[Path]):
 
     def __init__(
         self,
-        short_flag: Optional[str] = None,
-        long_flag: Optional[str] = None,
+        short_flag: t.Optional[str] = None,
+        long_flag: t.Optional[str] = None,
         exists: bool = False,
         resolve: bool = False,
-        default: Optional[Path] = None,
-        help: Optional[str] = None,
-        env: Optional[str] = None,
+        default: t.Optional[Path] = None,
+        help: t.Optional[str] = None,  # pylint: disable=redefined-builtin
+        env: t.Optional[str] = None,
     ) -> None:
         super().__init__(short_flag, long_flag, default, help, env)
         self.exists = exists
         self.resolve = resolve
 
-    def parse(self, value: Any) -> Path:
+    def parse(self, value: t.Any) -> Path:
         """
         Parse path string.
 
         :param value: The value to be parsed.
-        :type value: Any
+        :type value: t.Any
         :return: The parsed object.
         :rtype: ParameterType
         """
@@ -340,25 +340,25 @@ class Directory(Parameter[Path]):
 
     def __init__(
         self,
-        short_flag: Optional[str] = None,
-        long_flag: Optional[str] = None,
+        short_flag: t.Optional[str] = None,
+        long_flag: t.Optional[str] = None,
         exists: bool = False,
         resolve: bool = False,
-        default: Optional[Path] = None,
-        help: Optional[str] = None,
-        env: Optional[str] = None,
+        default: t.Optional[Path] = None,
+        help: t.Optional[str] = None,  # pylint: disable=redefined-builtin
+        env: t.Optional[str] = None,
     ) -> None:
         super().__init__(short_flag, long_flag, default, help, env)
 
         self.exists = exists
         self.resolve = resolve
 
-    def parse(self, value: Any) -> Path:
+    def parse(self, value: t.Any) -> Path:
         """
         Parse path string.
 
         :param value: The value to be parsed.
-        :type value: Any
+        :type value: t.Any
         :return: The parsed object.
         :rtype: ParameterType
         """
