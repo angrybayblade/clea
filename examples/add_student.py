@@ -1,10 +1,11 @@
+"""Command example"""
+
 from enum import Enum
 from pathlib import Path
 from typing import List
 
 from typing_extensions import Annotated
 
-from clea.context import Context
 from clea.params import (
     Boolean,
     Choice,

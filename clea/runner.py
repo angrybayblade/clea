@@ -1,16 +1,16 @@
 """CLI Runner."""
 
 import sys
-from typing import Optional, Union
+import typing as t
 
 from clea.exceptions import BasecleaException
 from clea.parser import Argv
-from clea.wrappers import BaseWrapper, Command
+from clea.wrappers import BaseWrapper
 
 
 def run(
     cli: BaseWrapper,
-    argv: Optional[Argv] = None,
+    argv: t.Optional[Argv] = None,
 ) -> int:
     """Run the command line utility."""
     argv = argv or sys.argv[1:].copy()

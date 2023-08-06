@@ -45,3 +45,12 @@ clean: clean-test clean-build clean-pyc clean-docs
 .PHONY: dist
 dist: clean
 	poetry build
+
+.PHONY: format-code
+format-code:
+	tox -e isort
+	tox -e black
+
+.PHONY: check-code
+check-code:
+	tox -p -e isort-check -e black-check -e flake8 -e mypy -e pylint

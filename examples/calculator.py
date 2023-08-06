@@ -24,16 +24,6 @@ def add(
 
 
 @calculator.command
-def add(
-    n1: Annotated[int, Integer()],
-    n2: Annotated[int, Integer()],
-) -> None:
-    """Add two numbers."""
-
-    print(f"Answer {n1+n2}")
-
-
-@calculator.command
 def subtract(
     n1: Annotated[int, Integer()],
     n2: Annotated[int, Integer()],
@@ -57,7 +47,9 @@ def multiply(
 def devide(
     n1: Annotated[int, Integer()],
     n2: Annotated[int, Integer()],
-    round: Annotated[bool, Boolean(help="Round up the answer")],
+    round: Annotated[  # pylint: disable=redefined-builtin
+        bool, Boolean(help="Round up the answer")
+    ],
 ) -> None:
     """Devide two numbers."""
 

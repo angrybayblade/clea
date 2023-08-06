@@ -1,5 +1,6 @@
+"""CLI tool to manage student data"""
+
 from enum import Enum
-from functools import partial, partialmethod
 from pathlib import Path
 from typing import List
 
