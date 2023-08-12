@@ -409,6 +409,11 @@ class Group(BaseWrapper):
         args, kwargs, help_only, version_only, sub_command, sub_argv = t.cast(
             GroupParser, self._parser
         ).parse(argv=argv, commands=self._children)
+
+        if version_only:
+            print(self.version)
+            return 0
+
         if sub_command is not None:
             self._invoke(
                 args=args, kwargs=kwargs, isolated=isolated, help_only=help_only
@@ -419,10 +424,6 @@ class Group(BaseWrapper):
             return self._invoke(
                 args=args, kwargs=kwargs, isolated=isolated, help_only=help_only
             )
-
-        if version_only:
-            print(self.version)
-            return 0
 
         return self.help()
 
