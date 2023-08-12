@@ -380,3 +380,7 @@ class Directory(Parameter[Path]):
 
 class ContextParameter(Parameter[Context]):
     """Context parameter."""
+
+
+class VersionParameter(Parameter[str]):
+    """Version parameter."""

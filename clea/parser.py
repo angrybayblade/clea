@@ -11,8 +11,10 @@ Argv = t.List[str]
 Args = t.List[t.Any]
 Kwargs = t.Dict[str, t.Any]
 
-ParsedCommandArgs = t.Tuple[Args, Kwargs, bool]
-ParsedGroupArgs = t.Tuple[Args, Kwargs, bool, t.Any, Args]
+HelpOnly = bool
+VersionOnly = bool
+ParsedCommandArgs = t.Tuple[Args, Kwargs, HelpOnly, VersionOnly]
+ParsedGroupArgs = t.Tuple[Args, Kwargs, HelpOnly, VersionOnly, t.Any, Args]
 
 
 class BaseParser:
@@ -79,7 +81,9 @@ class CommandParser(BaseParser):
         kwargs: Kwargs = {}
         for arg in argv:
             if arg == "--help":
-                return args, kwargs, True
+                return args, kwargs, True, False
+            if arg == "--version":
+                return args, kwargs, False, True
             if arg.startswith("-"):
                 if "=" in arg:
                     flag, value = arg.split("=")
@@ -108,7 +112,7 @@ class CommandParser(BaseParser):
                     kwargs[kwarg.name] = kwarg.container
                 else:
                     kwargs[kwarg.name] = kwarg.default
-        return args, kwargs, False
+        return args, kwargs, False, False
 
 
 class GroupParser(BaseParser):
@@ -116,7 +120,7 @@ class GroupParser(BaseParser):
 
     def parse(  # pylint: disable=too-many-branches
         self, argv: Argv, commands: t.Optional[t.Dict[str, t.Any]] = None
-    ) -> t.Tuple[Args, Kwargs, bool, t.Any, Args]:
+    ) -> ParsedGroupArgs:
         """Parse and return kwargs."""
         commands = commands or {}
         args: Args = []
@@ -130,7 +134,9 @@ class GroupParser(BaseParser):
                 sub_argv = argv[_i:]
                 break
             if arg == "--help":
-                return args, kwargs, True, None, argv
+                return args, kwargs, True, False, None, argv
+            if arg == "--version":
+                return args, kwargs, False, True, None, argv
             if arg.startswith("-"):
                 if "=" in arg:
                     flag, value = arg.split("=")
@@ -159,4 +165,4 @@ class GroupParser(BaseParser):
                     kwargs[kwarg.name] = kwarg.container
                 else:
                     kwargs[kwarg.name] = kwarg.default
-        return args, kwargs, False, sub_command, sub_argv
+        return args, kwargs, False, False, sub_command, sub_argv
