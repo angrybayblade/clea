@@ -2,7 +2,7 @@
 
 - Early exit on `--version` flag
 
-# v0.1.0.rc1
+# v0.1.0.rc2
 
 - Adds support for `--version` flag
 - Pins `typing-extention`
