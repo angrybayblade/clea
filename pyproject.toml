@@ -6,6 +6,9 @@ readme = "README.md"
 authors = ["angrybayblade <vptl185@gmail.com>"]
 packages = [{include = "clea"}]
 
+[tool.setuptools.package-data]
+clea = ["py.typed"]
+
 [tool.poetry.dependencies]
 python = ">=3.8,<4.0"
 
