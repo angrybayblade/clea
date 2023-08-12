@@ -21,15 +21,17 @@ class BaseWrapper:
     """Base command wrapper."""
 
     _f: t.Callable
-    _parser: t.Any
+    _parser: t.Union[CommandParser, GroupParser]
 
     name: str
+    parent: t.Optional["Group"]
 
     def __init__(
         self,
         f: t.Callable,
         context: t.Optional[Context] = None,
         name: t.Optional[str] = None,
+        parent: t.Optional["Group"] = None,
     ) -> None:
         """Initialize Command object.
 
@@ -42,6 +44,9 @@ class BaseWrapper:
         self._f = f
         self.context = context
         self.name = name or f.__name__
+        self.parent = parent
+        if self.parent is not None:
+            self.parent.add_chiild(self)
 
     def __call__(self, *args: t.Any, **kwds: t.Any) -> t.Any:
         """Call the base function.
@@ -117,6 +122,7 @@ class Command(BaseWrapper):
         parser: CommandParser,
         context: t.Optional[Context] = None,
         name: t.Optional[str] = None,
+        parent: t.Optional["Group"] = None,
     ) -> None:
         """Initialize Command object.
 
@@ -126,7 +132,7 @@ class Command(BaseWrapper):
         :type parser: Parser
         :return: None
         """
-        super().__init__(f=f, context=context, name=name)
+        super().__init__(f=f, context=context, name=name, parent=parent)
         self._parser = parser
 
     def invoke(self, argv: Argv, isolated: bool = False) -> int:
@@ -144,9 +150,58 @@ class Command(BaseWrapper):
             args=args, kwargs=kwargs, isolated=isolated, help_only=help_only
         )
 
+    @t.overload
     @classmethod
     def wrap(
-        cls, f: t.Callable, context: t.Optional[Context] = None, **kwargs: t.Any
+        cls,
+        f: t.Optional[t.Callable] = None,
+    ) -> "Command":
+        """
+        Decorator function to wrap a function as a command.
+
+        :param f: The function to be wrapped.
+        :type f: t.callable
+        :return: A `Command` object representing the wrapped function.
+        :rtype: Command
+        """
+
+    @t.overload
+    @classmethod
+    def wrap(
+        cls,
+        f: t.Optional[t.Callable] = None,
+        name: t.Optional[str] = None,
+        context: t.Optional[Context] = None,
+        parent: t.Optional["Group"] = None,
+    ) -> t.Callable[[t.Callable], "Command"]:
+        """Command wrapper"""
+
+    @classmethod
+    def wrap(
+        cls,
+        f: t.Optional[t.Callable] = None,
+        name: t.Optional[str] = None,
+        context: t.Optional[Context] = None,
+        parent: t.Optional["Group"] = None,
+    ) -> t.Callable[[t.Callable], "Command"]:
+        """
+        Decorator function to wrap a function as a command.
+
+        :param f: The function to be wrapped.
+        :type f: t.callable
+        :return: A `Command` object representing the wrapped function.
+        :rtype: Command
+        """
+        if f is not None:
+            return cls._wrap(f=f, context=context, parent=parent)
+        return partial(cls._wrap, name=name, context=context, parent=parent)
+
+    @classmethod
+    def _wrap(
+        cls,
+        f: t.Callable,
+        context: t.Optional[Context] = None,
+        **kwargs: t.Any,
     ) -> "Command":
         """
         Decorator function to wrap a function as a command.
@@ -191,6 +246,7 @@ class Group(BaseWrapper):
         context: t.Optional[Context] = None,
         name: t.Optional[str] = None,
         allow_direct_exec: bool = False,
+        parent: t.Optional["Group"] = None,
     ) -> None:
         """Initialize Command object.
 
@@ -200,14 +256,82 @@ class Group(BaseWrapper):
         :type parser: Parser
         :return: None
         """
-        super().__init__(f=f, context=context, name=name)
+        super().__init__(f=f, context=context, name=name, parent=parent)
 
         self._parser = parser
         self._children = {}
         self._allow_direct_exec = allow_direct_exec
 
+        self.command = partial(Command.wrap, parent=self, context=self.context)
+        self.group = partial(self.wrap, parent=self, context=self.context)
+
+    def add_chiild(self, child: t.Any) -> None:
+        """Add child node."""
+        self._children[t.cast(BaseWrapper, child).name] = child
+
+    @t.overload
     @classmethod
     def wrap(
+        cls,
+        f: t.Optional[t.Callable] = None,
+    ) -> "Group":
+        """
+        Decorator function to wrap a function as a command.
+
+        :param f: The function to be wrapped.
+        :type f: t.callable
+        :return: A `Command` object representing the wrapped function.
+        :rtype: Command
+        """
+
+    @t.overload
+    @classmethod
+    def wrap(
+        cls,
+        f: t.Optional[t.Callable] = None,
+        name: t.Optional[str] = None,
+        allow_direct_exec: bool = False,
+        context: t.Optional[Context] = None,
+        parent: t.Optional["Group"] = None,
+    ) -> t.Callable[[t.Callable], "Group"]:
+        """
+        Decorator function to wrap a function as a command.
+
+        :param f: The function to be wrapped.
+        :type f: t.callable
+        :return: A `Command` object representing the wrapped function.
+        :rtype: Command
+        """
+
+    @classmethod
+    def wrap(
+        cls,
+        f: t.Optional[t.Callable] = None,
+        name: t.Optional[str] = None,
+        allow_direct_exec: bool = False,
+        context: t.Optional[Context] = None,
+        parent: t.Optional["Group"] = None,
+    ) -> t.Callable[[t.Callable], "Group"]:
+        """
+        Decorator function to wrap a function as a command.
+
+        :param f: The function to be wrapped.
+        :type f: t.callable
+        :return: A `Command` object representing the wrapped function.
+        :rtype: Command
+        """
+        if f is not None:
+            return cls._wrap(f=f, context=context, parent=parent)
+        return partial(
+            cls._wrap,
+            name=name,
+            allow_direct_exec=allow_direct_exec,
+            context=context,
+            parent=parent,
+        )
+
+    @classmethod
+    def _wrap(
         cls, f: t.Callable, context: t.Optional[Context] = None, **kwargs: t.Any
     ) -> "Group":
         """
@@ -238,13 +362,13 @@ class Group(BaseWrapper):
                 parameter.default = default
             parameter.name = name
             parser.add(defintion=parameter)
-        return cls(f=f, parser=parser, **kwargs)
+        return cls(f=f, parser=parser, context=context, **kwargs)
 
     def invoke(self, argv: Argv, isolated: bool = False) -> int:
         """Run the command."""
-        args, kwargs, help_only, sub_command, sub_argv = self._parser.parse(
-            argv=argv, commands=self._children
-        )
+        args, kwargs, help_only, sub_command, sub_argv = t.cast(
+            GroupParser, self._parser
+        ).parse(argv=argv, commands=self._children)
         exec_subcommand = sub_command is not None
         if exec_subcommand:
             self._invoke(
@@ -257,28 +381,6 @@ class Group(BaseWrapper):
                 args=args, kwargs=kwargs, isolated=isolated, help_only=help_only
             )
         return self.help()
-
-    def command(self, f: t.Callable, name: t.Optional[str] = None) -> Command:
-        """Command decorator."""
-        wrapped = Command.wrap(f=f, context=self.context, name=name)
-        self._children[wrapped.name] = wrapped
-        return wrapped
-
-    def group(
-        self,
-        f: t.Callable,
-        name: t.Optional[str] = None,
-        allow_direct_exec: bool = False,
-    ) -> "Group":
-        """Group decorator."""
-        wrapped = Group.wrap(
-            f=f,
-            context=self.context,
-            name=name,
-            allow_direct_exec=allow_direct_exec,
-        )
-        self._children[wrapped.name] = wrapped
-        return wrapped
 
     def help(self) -> int:
         """Print help string."""
@@ -301,90 +403,5 @@ class Group(BaseWrapper):
         return 0
 
 
-@t.overload
-def command(f: t.Optional[t.Callable] = None) -> Command:
-    """
-    Decorator function to wrap a function as a command.
-
-    :param f: The function to be wrapped.
-    :type f: t.callable
-    :return: A `Command` object representing the wrapped function.
-    :rtype: Command
-    """
-
-
-@t.overload
-def command(
-    f: t.Optional[t.Callable] = None,
-    name: t.Optional[str] = None,
-    context: t.Optional[Context] = None,
-) -> t.Callable[[t.Callable], Command]:
-    """Command wrapper"""
-
-
-def command(
-    f: t.Optional[t.Callable] = None,
-    name: t.Optional[str] = None,
-    context: t.Optional[Context] = None,
-) -> t.Callable[[t.Callable], Command]:
-    """
-    Decorator function to wrap a function as a command.
-
-    :param f: The function to be wrapped.
-    :type f: t.callable
-    :return: A `Command` object representing the wrapped function.
-    :rtype: Command
-    """
-    if f is not None:
-        return Command.wrap(f=f, context=context)
-    return partial(Command.wrap, name=name, context=context)
-
-
-@t.overload
-def group(f: t.Optional[t.Callable] = None) -> Group:
-    """
-    Decorator function to wrap a function as a command.
-
-    :param f: The function to be wrapped.
-    :type f: t.callable
-    :return: A `Command` object representing the wrapped function.
-    :rtype: Command
-    """
-
-
-@t.overload
-def group(
-    f: t.Optional[t.Callable] = None,
-    name: t.Optional[str] = None,
-    allow_direct_exec: bool = False,
-    context: t.Optional[Context] = None,
-) -> t.Callable[[t.Callable], Group]:
-    """
-    Decorator function to wrap a function as a command.
-
-    :param f: The function to be wrapped.
-    :type f: t.callable
-    :return: A `Command` object representing the wrapped function.
-    :rtype: Command
-    """
-
-
-def group(
-    f: t.Optional[t.Callable] = None,
-    name: t.Optional[str] = None,
-    allow_direct_exec: bool = False,
-    context: t.Optional[Context] = None,
-) -> t.Callable[[t.Callable], Group]:
-    """
-    Decorator function to wrap a function as a command.
-
-    :param f: The function to be wrapped.
-    :type f: t.callable
-    :return: A `Command` object representing the wrapped function.
-    :rtype: Command
-    """
-    if f is not None:
-        return Group.wrap(f=f, context=context)
-    return partial(
-        Group.wrap, name=name, allow_direct_exec=allow_direct_exec, context=context
-    )
+command = Command.wrap
+group = Group.wrap

@@ -2,6 +2,7 @@
 
 
 import typing as t
+from pathlib import Path
 
 
 class Context:
@@ -12,6 +13,12 @@ class Context:
     def __init__(self) -> None:
         """Initialize context."""
         self._data = {}
+        self._cwd = Path.cwd()
+
+    @property
+    def cwd(self) -> Path:
+        """Current working directory."""
+        return self._cwd
 
     def set(self, key: t.Any, value: t.Any) -> None:
         """Set config value."""

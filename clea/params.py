@@ -78,7 +78,7 @@ class Parameter(t.Generic[ParameterType]):
     @property
     def metavar(self) -> str:
         """Metavar name"""
-        return f"<{self.name.upper()} t.type={self._type.__name__}>"
+        return f"<{self.name.upper()} type={self._type.__name__}>"
 
     @property
     def var(self) -> str:
@@ -98,7 +98,7 @@ class Parameter(t.Generic[ParameterType]):
             return self._type(value)
         except ValueError as e:
             raise ParsingError(
-                f"Error parsing value for {self.metavar}; Provided value={value}; Expected t.type={self._type.__name__}"
+                f"Error parsing value for {self.metavar}; Provided value={value}; Expected type={self._type.__name__}"
             ) from e
 
     def help(self) -> str:
