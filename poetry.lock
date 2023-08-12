@@ -480,7 +480,7 @@ testing = ["flaky (>=3.4.0)", "freezegun (>=0.3.11)", "pathlib2 (>=2.3.3)", "psu
 name = "typing-extensions"
 version = "4.7.1"
 description = "Backported and Experimental Type Hints for Python 3.7+"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7"
 files = [
@@ -597,4 +597,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8,<4.0"
-content-hash = "a38a04828786d9d7addae086e132caef0e740cf7738383b142169bd36ca55e43"
+content-hash = "a6ae36a334915cdc5910cfca4b9a46509942e60e0893b666836fbd9b0ba9f4bd"
