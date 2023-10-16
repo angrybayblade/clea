@@ -42,7 +42,8 @@ class BaseParser:
         while not self._args.empty():
             missing.append(self._args.get().metavar)
         raise ArgumentsMissing(
-            "Missing argument for positional arguments " + ", ".join(missing)
+            message="Missing argument for positional arguments " + ", ".join(missing),
+            exit_code=1,
         )
 
     def add(self, defintion: Parameter) -> None:
@@ -79,6 +80,7 @@ class CommandParser(BaseParser):
         """Parse and return kwargs."""
         args: Args = []
         kwargs: Kwargs = {}
+        _args = self._args.queue
         for arg in argv:
             if arg == "--help":
                 return args, kwargs, True, False

@@ -98,7 +98,8 @@ class Parameter(t.Generic[ParameterType]):
             return self._type(value)
         except ValueError as e:
             raise ParsingError(
-                f"Error parsing value for {self.metavar}; Provided value={value}; Expected type={self._type.__name__}"
+                message=f"Error parsing value for {self.metavar}; Provided value={value}; Expected type={self._type.__name__}",
+                exit_code=1,
             ) from e
 
     def help(self) -> str:
@@ -218,8 +219,8 @@ class Choice(Parameter[Enum]):
             return self.enum(value=value)
         except ValueError as e:
             raise ParsingError(
-                f"Error parsing value for {self.metavar}; Provided value={value}; "
-                f"Expected value from {set(map(lambda x:x.value, self.enum))}"
+                message=f"Error parsing value for {self.metavar}; Provided value={value}; Expected value from {set(map(lambda x:x.value, self.enum))}",
+                exit_code=1,
             ) from e
 
     def help(self) -> str:
@@ -274,8 +275,8 @@ class ChoiceByFlag(Parameter[Enum]):
             return self._default
         except (KeyError, ValueError) as e:
             raise ParsingError(
-                f"Error parsing value for {self.metavar}; Provided value={value}; "
-                f"Expected value from {set(map(lambda x:x.value, self.enum))}"
+                message=f"Error parsing value for {self.metavar}; Provided value={value}; Expected value from {set(map(lambda x:x.value, self.enum))}",
+                exit_code=1,
             ) from e
 
     def help(self) -> str:
@@ -324,11 +325,13 @@ class File(Parameter[Path]):
         exists = path.exists()
         if self.exists and not path.exists():
             raise ParsingError(
-                f"Invalid value for {flag} provided path `{path}` does not exist"
+                message=f"Invalid value for {flag} provided path `{path}` does not exist",
+                exit_code=1,
             )
         if exists and not path.is_file():
             raise ParsingError(
-                f"Invalid value for {flag} provided path `{path}` is not a file"
+                message=f"Invalid value for {flag} provided path `{path}` is not a file",
+                exit_code=1,
             )
         if self.resolve:
             return path.resolve()
@@ -367,11 +370,13 @@ class Directory(Parameter[Path]):
         exists = path.exists()
         if self.exists and not exists:
             raise ParsingError(
-                f"Invalid value for {flag} provided path `{path}` does not exist"
+                message=f"Invalid value for {flag} provided path `{path}` does not exist",
+                exit_code=1,
             )
         if exists and not path.is_dir():
             raise ParsingError(
-                f"Invalid value for {flag} provided path `{path}` is not a directory"
+                message=f"Invalid value for {flag} provided path `{path}` is not a directory",
+                exit_code=1,
             )
         if self.resolve:
             return path.resolve()
