@@ -49,7 +49,7 @@ class BaseWrapper:
         self.version = version
         self.parent = parent
         if self.parent is not None:
-            self.parent.add_chiild(self)
+            self.parent.add_child(self)
 
     def __call__(self, *args: t.Any, **kwds: t.Any) -> t.Any:
         """Call the base function.
@@ -292,7 +292,7 @@ class Group(BaseWrapper):
         self.command = partial(Command.wrap, parent=self, context=self.context)
         self.group = partial(self.wrap, parent=self, context=self.context)
 
-    def add_chiild(self, child: t.Any) -> None:
+    def add_child(self, child: t.Any) -> None:
         """Add child node."""
         self._children[t.cast(BaseWrapper, child).name] = child
 
