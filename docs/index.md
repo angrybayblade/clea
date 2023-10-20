@@ -1,4 +1,16 @@
-## Define a command
+## Introduction
+
+Clea is a light weight application framework for creating CLI applications in python. Clea is uses type annotations to generate the command/group defintions and parse the arguments at the runtime. To start with clea run
+
+## Install
+
+```
+pip3 install clea
+```
+
+## Quickstart
+
+Define you first command using 
 
 ```python
 from typing_extensions import Annotated
@@ -49,32 +61,8 @@ $ python add.py 2 3
 Total 5
 ```
 
-## With custom name
+## Next steps 
 
-```python
-(...)
-
-@command(name="add-numbers")
-def add(
-    n1: Annotated[int, Integer()],
-    n2: Annotated[int, Integer()],
-) -> None:
-    """Add two numbers"""
-    print (f"Total: {n1+n2}")
-
-(...)
-```
-
-The custom name will show up as the command name
-
-```bash
-$ python add.py --help
-
-Usage: add-numbers [OPTIONS] N1 N2
-
-        Add two numbers
-
-Options:
-
-    --help                        Show help and exit.
-```
+- [Command](/clea/command)
+- [Group](/clea/group)
+- [Parameters](/clea/parameters)
