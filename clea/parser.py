@@ -80,7 +80,6 @@ class CommandParser(BaseParser):
         """Parse and return kwargs."""
         args: Args = []
         kwargs: Kwargs = {}
-        _args = self._args.queue
         for arg in argv:
             if arg == "--help":
                 return args, kwargs, True, False
