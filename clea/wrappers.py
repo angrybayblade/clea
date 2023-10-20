@@ -94,6 +94,8 @@ class BaseWrapper:
         for parameter in set(
             self._parser._kwargs.values()  # pylint: disable=protected-access
         ):
+            if parameter.name == "context":
+                continue
             print(f"    {parameter.help()}")
         print("    --help                        Show help and exit.")
         return 0
@@ -445,6 +447,8 @@ class Group(BaseWrapper):
         for parameter in set(
             self._parser._kwargs.values()  # pylint: disable=protected-access
         ):
+            if parameter.name == "context":
+                continue
             print(f"    {parameter.help()}")
         print("    --help                        Show help and exit.")
         print("\nCommands:\n")
