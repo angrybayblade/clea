@@ -2,6 +2,10 @@ temp/
 build/
 dist/
 site/
+htmlcov/
+
+.coverage
+coverage.xml
 
 .tox/
 .mypy_cache/
