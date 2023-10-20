@@ -86,12 +86,77 @@
     
     <div id="toc-collapse" class="navbar-collapse collapse card bg-secondary">
         <ul class="nav flex-column">
+            
+            <li class="nav-item" data-level="2"><a href="#data-store" class="nav-link">Data store</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="2"><a href="#custom-context" class="nav-link">Custom context</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
         </ul>
     </div>
 </div></div>
                     <div class="col-md-9" role="main">
 
-<p>// Under construction</p></div>
+<p>Whenever a command is executed, a runtime object is created which holds state for this particular invocation. You can utilise this context object for maintining a state for the command execution.</p>
+<h2 id="data-store">Data store</h2>
+<p>Context object provides a simple key-value data store for storing and retrieving data across the execution.</p>
+<pre><code class="language-python">from clea.context import Context
+from clea.runner import run
+from clea.wrappers import group
+
+
+@group
+def admin(context: Context) -&gt; None:
+    &quot;&quot;&quot;Admin.&quot;&quot;&quot;
+    context.set(&quot;foo&quot;, &quot;bar&quot;)
+
+
+@admin.group(name=&quot;manage&quot;)
+def manage(context: Context) -&gt; None:
+    &quot;&quot;&quot;Manage.&quot;&quot;&quot;
+    context.set(&quot;hello&quot;, &quot;world&quot;)
+
+
+@manage.command
+def student(context: Context) -&gt; None:
+    &quot;&quot;&quot;Manage.&quot;&quot;&quot;
+    print(context.get(&quot;foo&quot;))
+    print(context.get(&quot;hello&quot;))
+
+
+if __name__ == &quot;__main__&quot;:
+    run(cli=admin)
+</code></pre>
+<h2 id="custom-context">Custom context</h2>
+<p>You can define a custom context for tasks such as loading and storing application config.</p>
+<pre><code class="language-python">from clea.context import Context as BaseContext
+from clea.runner import run
+from clea.wrappers import command
+
+
+class Context(BaseContext):
+    &quot;&quot;&quot;Custom context object&quot;&quot;&quot;
+
+    def config(self) -&gt; dict:
+        &quot;&quot;&quot;Returns application config.&quot;&quot;&quot;
+        return {
+            &quot;home&quot;: &quot;~/.app&quot;,
+        }
+
+
+@command(context=Context())
+def home(context: Context) -&gt; None:
+    &quot;&quot;&quot;Print home path.&quot;&quot;&quot;
+    print(context.config().get(&quot;home&quot;))
+
+
+if __name__ == &quot;__main__&quot;:
+    run(cli=home)
+</code></pre></div>
             </div>
         </div>
 
