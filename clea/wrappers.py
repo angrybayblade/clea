@@ -8,7 +8,7 @@ This module provides a Command class that represents a single command implementa
 import typing as t
 from functools import partial
 
-from clea import params as p
+import clea.params as p
 from clea.context import Context
 from clea.helpers import get_function_metadata
 from clea.parser import Args, Argv, CommandParser, GroupParser, Kwargs
@@ -151,7 +151,7 @@ class Command(BaseWrapper):
         :return: 0 if the command runs successfully, 1 otherwise.
         :rtype: int
         """
-        args, kwargs, help_only, version_only = self._parser.parse(argv=argv)
+        args, kwargs, help_only, version_only = self._parser.copy().parse(argv=argv)
         if version_only:
             print(self.version)
             return 0
@@ -406,9 +406,18 @@ class Group(BaseWrapper):
 
     def invoke(self, argv: Argv, isolated: bool = False) -> int:
         """Run the command."""
-        args, kwargs, help_only, version_only, sub_command, sub_argv = t.cast(
-            GroupParser, self._parser
-        ).parse(argv=argv, commands=self._children)
+        (
+            args,
+            kwargs,
+            help_only,
+            version_only,
+            sub_command,
+            sub_argv,
+        ) = (
+            t.cast(GroupParser, self._parser)
+            .copy()
+            .parse(argv=argv, commands=self._children)
+        )
 
         if version_only:
             print(self.version)
