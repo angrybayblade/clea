@@ -1,6 +1,5 @@
 """Context example."""
 
-
 from clea.context import Context
 from clea.runner import run
 from clea.wrappers import group
