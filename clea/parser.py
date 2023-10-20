@@ -1,7 +1,7 @@
 """Command line parser."""
 
 import typing as t
-from queue import Queue
+from collections import deque
 
 from clea.exceptions import ArgumentsMissing, ExtraArgumentProvided
 from clea.params import ChoiceByFlag, Parameter
@@ -20,27 +20,22 @@ ParsedGroupArgs = t.Tuple[Args, Kwargs, HelpOnly, VersionOnly, t.Any, Args]
 class BaseParser:
     """Argument parser."""
 
-    _args: Queue[Parameter]
+    _args: deque[Parameter]
     _kwargs: t.Dict[str, Parameter]
 
     def __init__(self) -> None:
         """Initialize object."""
 
         self._kwargs = {}
-        self._args = Queue()
+        self._args = deque()
 
     def get_arg_vars(self) -> t.List[str]:
         """Get a t.list of metavars."""
-        missing = []
-        while not self._args.empty():
-            missing.append(self._args.get().var)
-        return missing
+        return list(map(lambda x: x.var, self._args))
 
-    def _raise_missing_args(self) -> None:
+    def raise_missing_args(self) -> None:
         """Raise if `args` t.list has parameter defintions"""
-        missing = []
-        while not self._args.empty():
-            missing.append(self._args.get().metavar)
+        missing = list(map(lambda x: x.metavar, self._args))
         raise ArgumentsMissing(
             message="Missing argument for positional arguments " + ", ".join(missing),
             exit_code=1,
@@ -62,7 +57,7 @@ class BaseParser:
             return
 
         if defintion.default is None:
-            self._args.put(defintion)
+            self._args.append(defintion)
 
     def parse(  # pylint: disable=unused-argument
         self, argv: Argv, commands: t.Optional[t.Dict[str, t.Any]] = None
@@ -99,13 +94,13 @@ class CommandParser(BaseParser):
                 if definition.is_container:
                     self._kwargs[flag] = definition
             else:
-                if self._args.empty():
+                if len(self._args) == 0:
                     raise ExtraArgumentProvided(f"Extra argument provided `{arg}`")
-                definition = self._args.get()
+                definition = self._args.popleft()
                 args.append(definition.parse(arg))
 
-        if not self._args.empty():
-            self._raise_missing_args()
+        if len(self._args) > 0:
+            self.raise_missing_args()
 
         if len(self._kwargs) > 0:
             for kwarg in self._kwargs.values():
@@ -114,6 +109,13 @@ class CommandParser(BaseParser):
                 else:
                     kwargs[kwarg.name] = kwarg.default
         return args, kwargs, False, False
+
+    def copy(self) -> "CommandParser":
+        """Create a copy of the object."""
+        parser = CommandParser()
+        parser._args = deque(self._args)  # pylint: disable=protected-access
+        parser._kwargs = self._kwargs.copy()  # pylint: disable=protected-access
+        return parser
 
 
 class GroupParser(BaseParser):
@@ -152,13 +154,13 @@ class GroupParser(BaseParser):
                 if definition.is_container:
                     self._kwargs[flag] = definition
             else:
-                if self._args.empty():
+                if len(self._args) == 0:
                     raise ExtraArgumentProvided(f"Extra argument provided `{arg}`")
-                definition = self._args.get()
+                definition = self._args.popleft()
                 args.append(definition.parse(arg))
 
-        if not self._args.empty():
-            self._raise_missing_args()
+        if len(self._args) > 0:
+            self.raise_missing_args()
 
         if len(self._kwargs) > 0:
             for kwarg in self._kwargs.values():
@@ -167,3 +169,10 @@ class GroupParser(BaseParser):
                 else:
                     kwargs[kwarg.name] = kwarg.default
         return args, kwargs, False, False, sub_command, sub_argv
+
+    def copy(self) -> "GroupParser":
+        """Create a copy of the object."""
+        parser = GroupParser()
+        parser._args = deque(self._args)  # pylint: disable=protected-access
+        parser._kwargs = self._kwargs.copy()  # pylint: disable=protected-access
+        return parser
