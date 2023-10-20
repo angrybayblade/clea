@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="https://angrybayblade.me/clea/parameters/">
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>Parameters - Clea</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/font-awesome.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+        <script>hljs.highlightAll();</script> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="..">Clea</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbar-collapse">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="navitem">
+                                <a href="../command/" class="nav-link">Command</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="../group/" class="nav-link">Group</a>
+                            </li>
+                            <li class="navitem active">
+                                <a href="./" class="nav-link">Parameters</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="../context/" class="nav-link">Context</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="../testing/" class="nav-link">Testing</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="../upgrading/" class="nav-link">Upgrading</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ml-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-toggle="modal" data-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                            <li class="nav-item">
+                                <a rel="prev" href="../group/" class="nav-link">
+                                    <i class="fa fa-arrow-left"></i> Previous
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a rel="next" href="../context/" class="nav-link">
+                                    Next <i class="fa fa-arrow-right"></i>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="https://github.com/angrybayblade/clea/blob/main/docs/parameters.md" class="nav-link"><i class="fa fa-github"></i> Edit on GitHub</a>
+                            </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-light navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-toggle="collapse" data-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-secondary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-level="2"><a href="#parameters" class="nav-link">Parameters</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="2"><a href="#base-types" class="nav-link">Base types</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="2"><a href="#boolean-flags" class="nav-link">Boolean flags</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="2"><a href="#list-of-strings" class="nav-link">List of strings</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="2"><a href="#choice" class="nav-link">Choice</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="2"><a href="#choice-using-flag" class="nav-link">Choice using flag</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h2 id="parameters">Parameters</h2>
+<p>Clea processes the method argument defintions in a pythonic way, which means argument without default values will be treated as required arguments and arguments with default values will be treated as keyword arguments. </p>
+<p>The default arguments don't need any explicit flags whereas the keyword arguments will require flag to be passed as an argument.</p>
+<p>For example</p>
+<pre><code class="language-python">from typing_extensions import Annotated
+
+from clea.params import Integer
+from clea.runner import run
+from clea.wrappers import command
+
+
+@command
+def add(
+    n1: Annotated[int, Integer(help=&quot;First number&quot;)],
+    n2: Annotated[int, Integer(help=&quot;Second number&quot;)] = 0,
+) -&gt; None:
+    &quot;&quot;&quot;Add two numbers&quot;&quot;&quot;
+
+    print(f&quot;Total {n1 + n2}&quot;)
+
+
+if __name__ == &quot;__main__&quot;:
+    run(cli=add)
+</code></pre>
+<p>If you run with <code>--help</code> you'll see that <code>n2</code> is defined as a flag parameter</p>
+<pre><code class="language-bash">$ python add.py --help
+
+Usage: add [OPTIONS] N1
+
+        Add two numbers
+
+Options:
+
+    --n2                          Second number
+    --help                        Show help and exit.
+</code></pre>
+<p>If you execute this as</p>
+<pre><code class="language-bash">$ python add.py
+</code></pre>
+<p>You'll get an error saying</p>
+<pre><code>Missing argument for positional arguments &lt;N1 type=int&gt;
+</code></pre>
+<p>As you can see the CLI only complains about one positional argument. So if you execute this command as</p>
+<pre><code class="language-bash">$ python add.py 10
+</code></pre>
+<p>The result will be shown as </p>
+<pre><code class="language-bash">Total 10
+</code></pre>
+<p>Now you can provide the second value as</p>
+<pre><code class="language-bash">$ python add.py 10 --n2=20
+
+Total 30
+</code></pre>
+<h2 id="base-types">Base types</h2>
+<p>Take an <code>integer/float/string</code> as an argument.</p>
+<pre><code class="language-python">(...)
+
+from clea.params import Integer, String, Float
+(...)
+
+
+@command(name=&quot;print&quot;)
+def _print(
+    integer: Annotated[int, Integer(help=&quot;Number argument.&quot;)],
+    string: Annotated[str, String(help=&quot;String argument.&quot;)],
+    flt: Annotated[float, Float(help=&quot;Float argument.&quot;)],
+) -&gt; None:
+    &quot;&quot;&quot;Take arguments and print them on console.&quot;&quot;&quot;
+
+    print(f&quot;{integer=}&quot;)
+    print(f&quot;{string=}&quot;)
+    print(f&quot;float={flt}&quot;)
+
+(...)
+</code></pre>
+<p>Help output</p>
+<pre><code>$ python command.py --help
+
+Usage: print [OPTIONS] INTEGER STRING FLT
+
+        Take arguments and print them on console.
+
+Options:
+
+    --help                        Show help and exit.
+</code></pre>
+<h2 id="boolean-flags">Boolean flags</h2>
+<p>The boolean flags do not require any input and they're considered as an <code>optional/keyword</code> argument with default value being <code>False</code> if not set to <code>True</code> explicitly. Providing the flag as an CLI argument will negate the default value and use it as the argument value when calling the function, which means if the default is set to <code>False</code> and you provide the flag when running the command the value will be set to <code>True</code> and vice versa.</p>
+<pre><code class="language-python">(...)
+
+from clea.params import Boolean
+(...)
+
+
+@command(name=&quot;print&quot;)
+def _print(
+    flag: Annotated[bool, Boolean(help=&quot;Boolean flag.&quot;)],
+) -&gt; None:
+    &quot;&quot;&quot;Take arguments and print them on console.&quot;&quot;&quot;
+
+    print(f&quot;{flag=}&quot;)
+
+(...)
+</code></pre>
+<p>Runing without any argument</p>
+<pre><code>$ python command.py
+
+flag=False
+</code></pre>
+<p>Running with flag</p>
+<pre><code>$ python command.py --flag
+
+flag=True
+</code></pre>
+<h2 id="list-of-strings">List of strings</h2>
+<p>To take a list of strings as an argument you can use <code>clea.params.StringList</code> parameter.</p>
+<pre><code class="language-python">from typing import List
+
+(...)
+
+from clea.params import StringList
+(...)
+
+
+@command(name=&quot;print&quot;)
+def _print(
+    strings: Annotated[List[str], StringList(&quot;-s&quot;, &quot;--string&quot;, help=&quot;A list of strings.&quot;)],
+) -&gt; None:
+    &quot;&quot;&quot;Take arguments and print them on console.&quot;&quot;&quot;
+
+    print(f&quot;{strings=}&quot;)
+
+(...)
+</code></pre>
+<p>If you don't provide any argument for the parameter the list will be empty by default. </p>
+<pre><code>$ python command.py
+
+strings=[]
+</code></pre>
+<p>Provide however many arguments you want using</p>
+<pre><code>$ python command.py -s=Hello -s=World --string=&quot;Foo Bar&quot;
+
+strings=['Hello', 'World', 'Foo Bar']
+</code></pre>
+<h2 id="choice">Choice</h2>
+<p>You can utilise <code>enum.Enum</code> and <code>clea.params.Choice</code> to create a choice paramters which will let the user choose from available enum values.</p>
+<pre><code class="language-python">from enum import Enum
+from typing import List
+
+(...)
+
+from clea.params import Choice
+(...)
+
+
+class ConnectionType(Enum):
+    &quot;&quot;&quot;Connection type enum.&quot;&quot;&quot;
+
+    TCP = &quot;tcp&quot;
+    UDP = &quot;udp&quot;
+
+@command(name=&quot;print&quot;)
+def _print(
+    ctype: Annotated[List[str], Choice(enum=ConnectionType, help=&quot;A list of strings.&quot;)],
+) -&gt; None:
+    &quot;&quot;&quot;Take arguments and print them on console.&quot;&quot;&quot;
+
+    print(f&quot;{ctype=}&quot;)
+
+(...)
+</code></pre>
+<p>The input will be parsed as an enum</p>
+<pre><code>$ python command.py tcp
+
+ctype=&lt;ConnectionType.TCP: 'tcp'&gt;
+</code></pre>
+<p>Providing input which is not defined as an enum value will raise an error</p>
+<pre><code>$ python command.py tc
+
+Error parsing value for &lt;CTYPE type=Enum&gt;; Provided value=tc; Expected value from {'tcp', 'udp'}
+</code></pre>
+<h2 id="choice-using-flag">Choice using flag</h2>
+<p>You can also define a <code>Choice</code> parameter which uses flags for each choice available to take the input using <code>clea.params.ChoiceByFlag</code> param.</p>
+<pre><code class="language-python">from enum import Enum
+from typing import List
+
+(...)
+
+from clea.params import ChoiceByFlag
+(...)
+
+
+class ConnectionType(Enum):
+    &quot;&quot;&quot;Connection type enum.&quot;&quot;&quot;
+
+    TCP = &quot;tcp&quot;
+    UDP = &quot;udp&quot;
+
+@command(name=&quot;print&quot;)
+def _print(
+    ctype: Annotated[List[str], ChoiceByFlag(enum=ConnectionType, help=&quot;Choose connection type.&quot;)],
+) -&gt; None:
+    &quot;&quot;&quot;Take arguments and print them on console.&quot;&quot;&quot;
+
+    print(f&quot;{ctype=}&quot;)
+
+(...)
+</code></pre>
+<p>The help string will be different here since every value in the enum will be defined as an individual flag</p>
+<pre><code>$ python command.py --help
+
+Usage: print [OPTIONS] 
+
+        Take arguments and print them on console.
+
+Options:
+
+    --tcp, --udp                  Choose connection type.
+    --help                        Show help and exit.
+</code></pre>
+<p>As before the input will be parsed as enum value</p>
+<pre><code>$ python command.py --tcp
+
+ctype=&lt;ConnectionType.TCP: 'tcp'&gt;
+</code></pre></div>
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../js/jquery-3.6.0.min.js"></script>
+        <script src="../js/bootstrap.min.js"></script>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js"></script>
+        <script src="../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>
