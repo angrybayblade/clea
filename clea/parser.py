@@ -104,6 +104,8 @@ class CommandParser(BaseParser):
 
         if len(self._kwargs) > 0:
             for kwarg in self._kwargs.values():
+                if kwarg.name == "version":
+                    continue
                 if kwarg.is_container:
                     kwargs[kwarg.name] = kwarg.container
                 else:
@@ -164,6 +166,8 @@ class GroupParser(BaseParser):
 
         if len(self._kwargs) > 0:
             for kwarg in self._kwargs.values():
+                if kwarg.name == "version":
+                    continue
                 if kwarg.is_container:
                     kwargs[kwarg.name] = kwarg.container
                 else:
