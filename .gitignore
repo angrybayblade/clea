@@ -1,6 +1,7 @@
 temp/
 build/
 dist/
+site/
 
 .tox/
 .mypy_cache/

@@ -1,10 +1,14 @@
-# Clea - A lightweight framework for creating CLI applications in python
+## Introduction
 
-Clea is uses type annotations to generate the command/group defintions and parse the arguments at the runtime. To start with clea run
+Clea is a light weight application framework for creating CLI applications in python. Clea is uses type annotations to generate the command/group defintions and parse the arguments at the runtime. To start with clea run
+
+## Install
 
 ```
 pip3 install clea
 ```
+
+## Quickstart
 
 Define you first command using 
 
@@ -33,7 +37,7 @@ if __name__ == "__main__":
     run(cli=add)
 ```
 
-> The example is taken from [add.py](examples/add.py) in the examples folder.
+> The example is taken from [add.py](https://github.com/angrybayblade/clea/blob/main/examples/add.py) in the examples folder.
 
 You can check the command definition using 
 
@@ -57,4 +61,8 @@ $ python add.py 2 3
 Total 5
 ```
 
-Read more about the usage of clea in the [docs](https://angrybayblade.github.io/clea/)
+## Next steps 
+
+- [Command](/clea/command)
+- [Group](/clea/group)
+- [Parameters](/clea/parameters)

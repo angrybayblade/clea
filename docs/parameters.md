@@ -1,6 +1,8 @@
-# Parameters
+## Parameters
 
-Clea processes the method argument defintions in a pythonic way, which means argument without default values will be treated as required arguments and arguments with default values will be treated as keyword arguments. The default arguments don't need any explicit flags whereas the keyword arguments will require flag to be passed as an argument.
+Clea processes the method argument defintions in a pythonic way, which means argument without default values will be treated as required arguments and arguments with default values will be treated as keyword arguments. 
+
+The default arguments don't need any explicit flags whereas the keyword arguments will require flag to be passed as an argument.
 
 For example
 
@@ -73,9 +75,7 @@ $ python add.py 10 --n2=20
 Total 30
 ```
 
-## Paramter type annotations
-
-### Basic type definitions
+## Base types
 
 Take an `integer/float/string` as an argument.
 
@@ -116,7 +116,7 @@ Options:
 ```
 
 
-### Boolean flags
+## Boolean flags
 
 The boolean flags do not require any input and they're considered as an `optional/keyword` argument with default value being `False` if not set to `True` explicitly. Providing the flag as an CLI argument will negate the default value and use it as the argument value when calling the function, which means if the default is set to `False` and you provide the flag when running the command the value will be set to `True` and vice versa.
 
@@ -154,7 +154,7 @@ $ python command.py --flag
 flag=True
 ```
 
-### List of strings
+## List of strings
 
 To take a list of strings as an argument you can use `clea.params.StringList` parameter.
 
@@ -194,7 +194,7 @@ $ python command.py -s=Hello -s=World --string="Foo Bar"
 strings=['Hello', 'World', 'Foo Bar']
 ```
 
-### Choice
+## Choice
 
 You can utilise `enum.Enum` and `clea.params.Choice` to create a choice paramters which will let the user choose from available enum values.
 
@@ -242,7 +242,7 @@ $ python command.py tc
 Error parsing value for <CTYPE type=Enum>; Provided value=tc; Expected value from {'tcp', 'udp'}
 ```
 
-### Choice using flag
+## Choice using flag
 
 You can also define a `Choice` parameter which uses flags for each choice available to take the input using `clea.params.ChoiceByFlag` param.
 

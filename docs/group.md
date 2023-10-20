@@ -1,4 +1,4 @@
-# Group
+## Define a group
 
 Define you first command group using 
 
@@ -29,7 +29,7 @@ if __name__ == "__main__":
     run(cli=calculator)
 ```
 
-> The example is taken from [calculator.py](/examples/calculator.py) in the examples folder.
+> The example is taken from [calculator.py](https://github.com/angrybayblade/clea/blob/main/examples/calculator.py) in the examples folder.
 
 You can check the command definition using 
 
@@ -55,7 +55,7 @@ $ python calculator.py add 2 3
 Answer 5
 ```
 
-## Define a command with a custom name
+## With custom name
 
 ```python
 (...)
@@ -71,7 +71,8 @@ def add(
     n2: Annotated[int, Integer()],
 ) -> None:
     """Add two numbers."""
-    (...)
+
+(...)
 ```
 
 The custom name will show up as the group name

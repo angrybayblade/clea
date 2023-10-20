@@ -1,6 +1,4 @@
-# Command
-
-Define your first command using 
+## Define a command
 
 ```python
 from typing_extensions import Annotated
@@ -27,7 +25,7 @@ if __name__ == "__main__":
     run(cli=add)
 ```
 
-> The example is taken from [add.py](examples/add.py) in the examples folder.
+> The example is taken from [add.py](https://github.com/angrybayblade/clea/blob/main/examples/add.py) in the examples folder.
 
 You can check the command definition using 
 
@@ -51,7 +49,7 @@ $ python add.py 2 3
 Total 5
 ```
 
-## Define a command with a custom name
+## With custom name
 
 ```python
 (...)
@@ -62,7 +60,9 @@ def add(
     n2: Annotated[int, Integer()],
 ) -> None:
     """Add two numbers"""
-    (...)
+    print (f"Total: {n1+n2}")
+
+(...)
 ```
 
 The custom name will show up as the command name
