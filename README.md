@@ -57,4 +57,4 @@ $ python add.py 2 3
 Total 5
 ```
 
-Read more about the usage of clea in the [docs](docs/README.md)
+Read more about the usage of clea in the [docs](https://angrybayblade.github.io/clea/)
