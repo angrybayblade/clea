@@ -63,6 +63,6 @@ def run(
     argv = argv if argv is not None else sys.argv[1:].copy()
     result = _run_isolated(cli=cli, argv=argv) if isolated else _run(cli=cli, argv=argv)
     if not isolated:
-        sys.stderr.write(result.stderr)
+        sys.stderr.write(result.stderr + "\n")
         sys.exit(result.exit_code)
     return result
