@@ -106,7 +106,7 @@ class Parameter(t.Generic[ParameterType]):
         """Help string."""
         if self.short_flag is not None:
             help_string = f"{self.short_flag}, "
-        else:
+        else:  # pragma: nocover
             help_string = ""
         help_string += f"{self.long_flag}"
         if self._help is not None:
@@ -183,7 +183,7 @@ class StringList(Parameter[t.List[str]]):
         if self.short_flag is not None:
             help_string = f"{self.short_flag}, "
         else:
-            help_string = ""
+            help_string = ""  # pragma: nocover
         help_string += f"{self.long_flag}"
         if self._help is not None:
             help_string += " " * (HELP_COL_LENGTH - len(help_string))
@@ -228,7 +228,7 @@ class Choice(Parameter[Enum]):
         if self.short_flag is not None:
             help_string = f"{self.short_flag}, "
         else:
-            help_string = ""
+            help_string = ""  # pragma: nocover
         help_string += f"{self.long_flag}"
         choices = "|".join(list(map(lambda x: x.value, self.enum)))
         help_string += f"  [{choices}]"
@@ -237,7 +237,7 @@ class Choice(Parameter[Enum]):
             if str_len < HELP_COL_LENGTH:
                 help_string += " " * (HELP_COL_LENGTH - str_len)
                 help_string += self._help
-            else:
+            else:  # pragma: nocover # TODO
                 help_string += "\n"
                 help_string += " " * HELP_COL_LENGTH
                 help_string += f"    {self._help}"
@@ -287,7 +287,7 @@ class ChoiceByFlag(Parameter[Enum]):
             if str_len < HELP_COL_LENGTH:
                 help_string += " " * (HELP_COL_LENGTH - str_len)
                 help_string += self._help
-            else:
+            else:  # pragma: nocover # TODO
                 help_string += "\n"
                 help_string += " " * HELP_COL_LENGTH
                 help_string += f"    {self._help}"

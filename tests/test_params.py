@@ -30,13 +30,21 @@ class _TestEnum(Enum):
 
 def test_parameter() -> None:
     """Test Parameter object."""
-    param = Parameter(
-        "-p",
-        "--parameter",
-        default=1,
-    )
+    param = Parameter("-p", "--parameter", help="Param.")
+
+    assert param.default is None
+
+    param.default = 1
+    assert param.default == 1
     assert param.short_flag == "-p"
     assert param.long_flag == "--parameter"
+    with pytest.raises(ValueError, match="'name' not defined."):
+        param.name
+
+    param.name = "param"
+    assert param.var == "PARAM"
+    assert "-p, --parameter               Param." in param.help()
+    assert str(param) == "<parameter 'ParameterType'>"
 
 
 def test_integer_parameter() -> None:
@@ -89,14 +97,15 @@ def test_boolean_parameter_inverse() -> None:
 
 def test_string_list_parameter() -> None:
     """Test StringList object."""
-    param = StringList()
+    param = StringList("-p", "--param", help="Param")
     param.name = "param"
     assert param.parse("hello") == ["hello"]
+    assert param.help() == "-p, --param                   Param"
 
 
 def test_choice_parameter() -> None:
     """Test Choice object."""
-    param = Choice(_TestEnum)
+    param = Choice(_TestEnum, "-p", help="Choice")
     param.name = "param"
     with pytest.raises(
         ParsingError,
@@ -104,11 +113,12 @@ def test_choice_parameter() -> None:
     ):
         param.parse("three")
     assert param.parse("one") == _TestEnum.ONE
+    assert param.help() == "-p, --param  [one|two]        Choice"
 
 
 def test_choice_by_flag_parameter() -> None:
     """Test ChoiceByFlag object."""
-    param = ChoiceByFlag(_TestEnum)
+    param = ChoiceByFlag(_TestEnum, help="Choice")
     param.name = "param"
     with pytest.raises(
         ParsingError,
@@ -117,27 +127,45 @@ def test_choice_by_flag_parameter() -> None:
         param.parse("three")
     assert param.parse("--one") == _TestEnum.ONE
     assert param.parse("--two") == _TestEnum.TWO
+    assert param.help() == "--one, --two                  Choice"
 
 
 def test_file_parameter() -> None:
     """Test File object."""
-    param = File()
+    param = File(exists=True)
     param.name = "param"
     with pytest.raises(
         ParsingError,
         match="Invalid value for --param provided path `.` is not a file",
     ):
         param.parse("./")
-    assert param.parse("./tox.ini") == Path("tox.ini")
+    with pytest.raises(
+        ParsingError,
+        match="Invalid value for --param provided path `hello` does not exist",
+    ):
+        param.parse("./hello")
+    assert param.parse("./tox.ini") == Path("./tox.ini")
+
+    param.resolve = True
+    assert param.parse("./tox.ini") == Path("./tox.ini").resolve()
 
 
 def test_directory_parameter() -> None:
     """Test File object."""
-    param = Directory()
+    param = Directory(exists=True)
     param.name = "param"
     with pytest.raises(
         ParsingError,
         match="Invalid value for --param provided path `tox.ini` is not a directory",
     ):
         param.parse("./tox.ini")
+    with pytest.raises(
+        ParsingError,
+        match="Invalid value for --param provided path `hello` does not exist",
+    ):
+        param.parse("./hello")
     assert param.parse("./") == Path("./")
+
+    param.resolve = True
+    assert param.parse("./") == Path("./").resolve()
+
