@@ -20,7 +20,7 @@ ParsedGroupArgs = t.Tuple[Args, Kwargs, HelpOnly, VersionOnly, t.Any, Args]
 class BaseParser:
     """Argument parser."""
 
-    _args: deque[Parameter]
+    _args: t.Deque[Parameter]
     _kwargs: t.Dict[str, Parameter]
 
     def __init__(self) -> None:
