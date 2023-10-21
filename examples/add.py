@@ -1,6 +1,6 @@
 """Simple add program."""
 
-from typing import Annotated
+from typing_extensions import Annotated
 
 from clea.params import Integer
 from clea.runner import run
