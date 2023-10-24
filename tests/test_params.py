@@ -107,6 +107,7 @@ def test_choice_parameter() -> None:
     """Test Choice object."""
     param = Choice(_TestEnum, "-p", help="Choice")
     param.name = "param"
+    param.create_long_flag()
     with pytest.raises(
         ParsingError,
         match="Error parsing value for <PARAM type=Enum>; Provided value=three; Expected value from",
@@ -134,6 +135,7 @@ def test_file_parameter() -> None:
     """Test File object."""
     param = File(exists=True)
     param.name = "param"
+    param.create_long_flag()
     with pytest.raises(
         ParsingError,
         match="Invalid value for --param provided path `.` is not a file",
@@ -154,6 +156,7 @@ def test_directory_parameter() -> None:
     """Test File object."""
     param = Directory(exists=True)
     param.name = "param"
+    param.create_long_flag()
     with pytest.raises(
         ParsingError,
         match="Invalid value for --param provided path `tox.ini` is not a directory",
@@ -168,4 +171,3 @@ def test_directory_parameter() -> None:
 
     param.resolve = True
     assert param.parse("./") == Path("./").resolve()
-
