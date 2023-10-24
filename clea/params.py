@@ -47,11 +47,14 @@ class Parameter(t.Generic[ParameterType]):
         return self._short_flag
 
     @property
-    def long_flag(self) -> str:
+    def long_flag(self) -> t.Optional[str]:
         """FLag"""
-        if self._long_flag is not None:
-            return self._long_flag
-        return "--" + t.cast(str, self.name).replace("_", "-")
+        return self._long_flag
+
+    def create_long_flag(self) -> str:
+        """Set the value of long flag."""
+        self._long_flag = "--" + t.cast(str, self.name).replace("_", "-")
+        return self._long_flag
 
     @property
     def default(self) -> t.Optional[ParameterType]:

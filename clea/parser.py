@@ -49,21 +49,28 @@ class BaseParser:
                 self._kwargs[long_flag] = defintion
             return
 
-        if defintion.default is not None:
+        if (
+            defintion.default is None
+            and defintion.short_flag is None
+            and defintion.long_flag is None
+        ):
+            self._args.append(defintion)
+            return
+
+        if defintion.default is not None and defintion.long_flag is None:
+            self._kwargs[defintion.create_long_flag()] = defintion
+
+        if defintion.long_flag is not None:
             self._kwargs[defintion.long_flag] = defintion
 
         if defintion.short_flag is not None:
             self._kwargs[defintion.short_flag] = defintion
-            return
-
-        if defintion.default is None:
-            self._args.append(defintion)
 
     def parse(  # pylint: disable=unused-argument
         self, argv: Argv, commands: t.Optional[t.Dict[str, t.Any]] = None
     ) -> t.Tuple:
         """Parse and return kwargs."""
-        return NotImplemented
+        return NotImplemented  # pragma: nocover
 
 
 class CommandParser(BaseParser):
@@ -93,6 +100,9 @@ class CommandParser(BaseParser):
                 kwargs[definition.name] = definition.parse(value=value)
                 if definition.is_container:
                     self._kwargs[flag] = definition
+                else:
+                    self._kwargs.pop(definition.short_flag, None)
+                    self._kwargs.pop(definition.long_flag, None)
             else:
                 if len(self._args) == 0:
                     raise ExtraArgumentProvided(f"Extra argument provided `{arg}`")
@@ -105,7 +115,7 @@ class CommandParser(BaseParser):
         if len(self._kwargs) > 0:
             for kwarg in self._kwargs.values():
                 if kwarg.name == "version":
-                    continue
+                    continue  # pragma: nocover
                 if kwarg.is_container:
                     kwargs[kwarg.name] = kwarg.container
                 else:
@@ -155,6 +165,9 @@ class GroupParser(BaseParser):
                 kwargs[definition.name] = definition.parse(value=value)
                 if definition.is_container:
                     self._kwargs[flag] = definition
+                else:
+                    self._kwargs.pop(definition.short_flag, None)
+                    self._kwargs.pop(definition.long_flag, None)
             else:
                 if len(self._args) == 0:
                     raise ExtraArgumentProvided(f"Extra argument provided `{arg}`")
@@ -167,7 +180,7 @@ class GroupParser(BaseParser):
         if len(self._kwargs) > 0:
             for kwarg in self._kwargs.values():
                 if kwarg.name == "version":
-                    continue
+                    continue  # pragma: nocover
                 if kwarg.is_container:
                     kwargs[kwarg.name] = kwarg.container
                 else:
