@@ -2,8 +2,8 @@
 A lightweight framework for writing CLI tools in python.
 """
 
-from .context import Context
-from .params import (
+from .context import Context  # noqa: F401
+from .params import (  # noqa: F401
     Boolean,
     Choice,
     ChoiceByFlag,
@@ -16,5 +16,5 @@ from .params import (
     StringList,
     VersionParameter,
 )
-from .runner import run
-from .wrappers import command, group
+from .runner import run  # noqa: F401
+from .wrappers import command, group  # noqa: F401
