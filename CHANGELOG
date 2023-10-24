@@ -1,12 +1,21 @@
+# v0.1.0.rc3
+
+* Adds support for isolated runs
+* Skips context parameter when displaying help
+* Adds support for multiple invoke calls in a single run
+* Skips version kwarg when parsing defaults
+* Documentation updates and support for documentation deployments
+* Adds support for simultaneuos usage of both long and short flags parsing
+
 # v0.1.0.rc2
 
-- Early exit on `--version` flag
+* Early exit on `--version` flag
 
 # v0.1.0.rc2
 
-- Adds support for `--version` flag
-- Pins `typing-extention`
+* Adds support for `--version` flag
+* Pins `typing-extention`
 
 # v0.1.0.rc0
 
-- Initial release
+* Initial release
