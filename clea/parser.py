@@ -101,8 +101,8 @@ class CommandParser(BaseParser):
                 if definition.is_container:
                     self._kwargs[flag] = definition
                 else:
-                    self._kwargs.pop(definition.short_flag, None)
-                    self._kwargs.pop(definition.long_flag, None)
+                    self._kwargs.pop(definition.short_flag or "", None)
+                    self._kwargs.pop(definition.long_flag or "", None)
             else:
                 if len(self._args) == 0:
                     raise ExtraArgumentProvided(f"Extra argument provided `{arg}`")
@@ -166,8 +166,8 @@ class GroupParser(BaseParser):
                 if definition.is_container:
                     self._kwargs[flag] = definition
                 else:
-                    self._kwargs.pop(definition.short_flag, None)
-                    self._kwargs.pop(definition.long_flag, None)
+                    self._kwargs.pop(definition.short_flag or "", None)
+                    self._kwargs.pop(definition.long_flag or "", None)
             else:
                 if len(self._args) == 0:
                     raise ExtraArgumentProvided(f"Extra argument provided `{arg}`")
