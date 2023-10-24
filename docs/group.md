@@ -92,3 +92,9 @@ Commands:
 
     add                           Add two numbers.
 ```
+
+## Next steps 
+
+- [Parameters](/clea/parameters)
+- [Context](/clea/context)
+- [Testing](/clea/testing)

@@ -10,5 +10,5 @@ def example() -> None:
     """Version example."""
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: nocover
     run(cli=example)

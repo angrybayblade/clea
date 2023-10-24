@@ -24,12 +24,5 @@ def student(context: Context) -> None:
     print(context.get("hello"))
 
 
-@manage.command(name="teacher")
-def teacher(context: Context) -> None:
-    """Manage."""
-    print(context.get("foo"))
-    print(context.get("hello"))
-
-
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: nocover
     run(cli=admin)

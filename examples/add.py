@@ -1,6 +1,6 @@
 """Simple add program."""
 
-from typing import Annotated
+from typing_extensions import Annotated
 
 from clea.params import Integer
 from clea.runner import run
@@ -17,5 +17,5 @@ def add(
     print(f"Total {n1 + n2}")
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: nocover
     run(cli=add)

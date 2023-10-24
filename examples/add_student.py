@@ -46,10 +46,15 @@ def add(
     score: Annotated[int, Float()],
     blood_group: Annotated[
         BloodGroup,
-        Choice(BloodGroup, "-b", help="Blood group of the student"),
+        Choice(
+            BloodGroup,
+            short_flag="-b",
+            long_flag="--bg",
+            help="Blood group of the student",
+        ),
     ],
     gender: Annotated[
-        Gender, ChoiceByFlag(Gender, Gender.MALE, help="Gender of the student")
+        Gender, ChoiceByFlag(Gender, default=Gender.MALE, help="Gender of the student")
     ],
     transfer: Annotated[
         bool, Boolean(help="Whether the student is a transfer student or not")
@@ -73,5 +78,5 @@ def add(
     )
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: nocover
     run(cli=add)

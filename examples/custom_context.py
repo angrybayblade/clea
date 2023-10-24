@@ -21,5 +21,5 @@ def home(context: Context) -> None:
     print(context.config().get("home"))
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: nocover
     run(cli=home)

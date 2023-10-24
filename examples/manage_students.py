@@ -55,10 +55,14 @@ def main(
 ) -> None:
     """Student helper."""
     context.set("verbosity", verbosity)
-    print(context.get("verbosity"))
 
 
-@main.command
+@main.group
+def admin() -> None:
+    """Admin tool."""
+
+
+@admin.command
 def add(
     name: Annotated[str, String()],
     age: Annotated[int, Integer()],
@@ -84,20 +88,11 @@ def add(
     )
 
 
-@main.group
-def admin() -> None:
-    """Admin tool."""
-
-
 @admin.command
-def remove(
-    name: Annotated[str, String()],
-    context: Context,
-) -> None:
-    """Remove a student."""
-    print(name)
-    print(context.get("verbosity"))
+def remove(name: Annotated[str, String()]) -> None:
+    """Remove student."""
+    print(f"Removed {name}")
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: nocover
     run(cli=main)

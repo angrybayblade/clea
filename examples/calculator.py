@@ -59,5 +59,5 @@ def devide(
         print(f"Answer {n1/n2}")
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: nocover
     run(cli=calculator)

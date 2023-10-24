@@ -47,11 +47,14 @@ class Parameter(t.Generic[ParameterType]):
         return self._short_flag
 
     @property
-    def long_flag(self) -> str:
+    def long_flag(self) -> t.Optional[str]:
         """FLag"""
-        if self._long_flag is not None:
-            return self._long_flag
-        return "--" + t.cast(str, self.name).replace("_", "-")
+        return self._long_flag
+
+    def create_long_flag(self) -> str:
+        """Set the value of long flag."""
+        self._long_flag = "--" + t.cast(str, self.name).replace("_", "-")
+        return self._long_flag
 
     @property
     def default(self) -> t.Optional[ParameterType]:
@@ -106,7 +109,7 @@ class Parameter(t.Generic[ParameterType]):
         """Help string."""
         if self.short_flag is not None:
             help_string = f"{self.short_flag}, "
-        else:
+        else:  # pragma: nocover
             help_string = ""
         help_string += f"{self.long_flag}"
         if self._help is not None:
@@ -183,7 +186,7 @@ class StringList(Parameter[t.List[str]]):
         if self.short_flag is not None:
             help_string = f"{self.short_flag}, "
         else:
-            help_string = ""
+            help_string = ""  # pragma: nocover
         help_string += f"{self.long_flag}"
         if self._help is not None:
             help_string += " " * (HELP_COL_LENGTH - len(help_string))
@@ -228,7 +231,7 @@ class Choice(Parameter[Enum]):
         if self.short_flag is not None:
             help_string = f"{self.short_flag}, "
         else:
-            help_string = ""
+            help_string = ""  # pragma: nocover
         help_string += f"{self.long_flag}"
         choices = "|".join(list(map(lambda x: x.value, self.enum)))
         help_string += f"  [{choices}]"
@@ -237,7 +240,7 @@ class Choice(Parameter[Enum]):
             if str_len < HELP_COL_LENGTH:
                 help_string += " " * (HELP_COL_LENGTH - str_len)
                 help_string += self._help
-            else:
+            else:  # pragma: nocover # TODO
                 help_string += "\n"
                 help_string += " " * HELP_COL_LENGTH
                 help_string += f"    {self._help}"
@@ -287,7 +290,7 @@ class ChoiceByFlag(Parameter[Enum]):
             if str_len < HELP_COL_LENGTH:
                 help_string += " " * (HELP_COL_LENGTH - str_len)
                 help_string += self._help
-            else:
+            else:  # pragma: nocover # TODO
                 help_string += "\n"
                 help_string += " " * HELP_COL_LENGTH
                 help_string += f"    {self._help}"

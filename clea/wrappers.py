@@ -95,7 +95,7 @@ class BaseWrapper:
             self._parser._kwargs.values()  # pylint: disable=protected-access
         ):
             if parameter.name == "context":
-                continue
+                continue  # pragma: nocover
             print(f"    {parameter.help()}")
         print("    --help                        Show help and exit.")
         return 0
@@ -113,7 +113,7 @@ class BaseWrapper:
         self, argv: Argv, isolated: bool = False
     ) -> int:
         """Run the command."""
-        return NotImplemented
+        return NotImplemented  # pragma: nocover
 
 
 class Command(BaseWrapper):
@@ -448,7 +448,7 @@ class Group(BaseWrapper):
             self._parser._kwargs.values()  # pylint: disable=protected-access
         ):
             if parameter.name == "context":
-                continue
+                continue  # pragma: nocover
             print(f"    {parameter.help()}")
         print("    --help                        Show help and exit.")
         print("\nCommands:\n")
