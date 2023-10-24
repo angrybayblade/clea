@@ -86,12 +86,38 @@
     
     <div id="toc-collapse" class="navbar-collapse collapse card bg-secondary">
         <ul class="nav flex-column">
+            
+            <li class="nav-item" data-level="2"><a href="#testing-clea-applications" class="nav-link">Testing clea applications</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
         </ul>
     </div>
 </div></div>
                     <div class="col-md-9" role="main">
 
-<p>// Under construction</p></div>
+<h2 id="testing-clea-applications">Testing clea applications</h2>
+<p>To test a clea application you can use the <code>isolated</code> flag in the <code>clea.runner.run</code> method. For example, to test the <code>add.py</code></p>
+<pre><code class="language-python">from examples.add import add as cli
+from clea.runner import run
+
+
+def test_missing_arguments() -&gt; None:
+    &quot;&quot;&quot;Test add.&quot;&quot;&quot;
+    result = run(cli=cli, argv=[], isolated=True)
+    assert result.exit_code == 1
+    assert (
+        &quot;Missing argument for positional arguments &lt;N1 type=int&gt;, &lt;N2 type=int&gt;&quot;
+        in result.stderr
+    )
+
+
+def test_add() -&gt; None:
+    &quot;&quot;&quot;Test add.&quot;&quot;&quot;
+    result = run(cli=cli, argv=[&quot;1&quot;, &quot;2&quot;], isolated=True)
+    assert result.exit_code == 0
+    assert &quot;Total 3&quot; in result.stdout
+</code></pre></div>
             </div>
         </div>
 
