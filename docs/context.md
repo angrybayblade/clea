@@ -62,3 +62,7 @@ def home(context: Context) -> None:
 if __name__ == "__main__":
     run(cli=home)
 ```
+
+## Next steps 
+
+- [Testing](/clea/testing)

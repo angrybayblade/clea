@@ -78,3 +78,8 @@ Options:
 
     --help                        Show help and exit.
 ```
+
+## Next steps 
+
+- [Group](/clea/group)
+- [Parameters](/clea/parameters)
