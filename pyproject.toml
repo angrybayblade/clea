@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "clea"
-version = "0.1.0.rc2"
+version = "0.1.0.rc3"
 description = "Framework for writing CLI application quickly"
 readme = "README.md"
 authors = ["angrybayblade <vptl185@gmail.com>"]
