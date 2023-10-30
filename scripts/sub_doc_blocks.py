@@ -3,17 +3,20 @@ Substitute blocks in the documentation
 
 Example block:
     Define an example block using following template
-        ```python !example:FILE:STARTING_LINE:ENDING_LINE
+        <!-- {"type": "example", "file"FILE:STARTING_LINE:ENDING_LINE -->
+        ```python
         # content will be added here
         ```
 Exectution block:
     Define an example block using following template
-        ```bash !exec:DIRECTORY:CAPTURE(stdout|stderr)
+        <!-- exec:DIRECTORY:CAPTURE(stdout|stderr) -->
+        ```bash
         $ CMD
         # output will be added here
         ```
 """
 
+import json
 import re
 import subprocess
 import typing as t
@@ -53,79 +56,52 @@ def parse_blocks(content: str) -> t.List[t.Dict[str, str]]:
     lines = content.split("\n")
     while len(lines) > 0:
         line = lines.pop(0)
-        if "```python !!example:" in line:
-            config = line.replace("```python !!example:", "").strip()
-            example_file, *slc = config.split(":")
-            example_block = line + "\n"
+        if line.startswith("<!-- {"):
+            config = json.loads(line.replace("<!-- ", "").replace(" -->", "").strip())
+            block = line + "\n"
             while len(lines) > 0:
                 line = lines.pop(0)
-                example_block += line + "\n"
+                block += line + "\n"
                 if line == "```":
                     break
-            blocks.append(
-                {
-                    "example": example_file,
-                    "block": example_block,
-                    "slc": list(map(int, slc)),
-                    "type": BlockType.EXAMPLE,
-                }
-            )
-
-        if "```bash !!exec" in line:
-            exec_dir, read = line.replace("```bash !!exec:", "").strip().split(":")
-            exec_block = line + "\n"
-            while len(lines) > 0:
-                line = lines.pop(0)
-                exec_block += line + "\n"
-                if line == "```":
-                    break
-            blocks.append(
-                {
-                    "directory": exec_dir,
-                    "block": exec_block,
-                    "read": read,
-                    "type": BlockType.EXEC,
-                }
-            )
-
+            config["type"] = BlockType(config["type"])
+            config["block"] = block
+            blocks.append(config)
     return blocks
 
 
 def sub_example(
     content: str,
-    example: str,
+    file: str,
     block: str,
-    slc: t.List[int],
+    start: int = 0,
+    end: int = -1,
 ) -> str:
     """Substitute block with content from example file."""
-    example_content = load_example(file=Path("examples", example))
-    replace_block = f"```python !!example:{example}"
-    if len(slc) == 2:
-        start, end = slc
-        replace_block += f":{start}:{end}"
-        skim = example_content.split("\n")
-        skim = skim[start:end]
-        example_content = "\n".join(skim)
-        example_content += "\n"
-    if len(slc) == 1:
-        (start,) = slc
-        replace_block += f":{start}"
-        skim = example_content.split("\n")
-        skim = skim[start:]
-        example_content = "\n".join(skim)
-        example_content += "\n"
-    replace_block += "\n" + example_content + "```\n"
+    config = {"file": file, "type": BlockType.EXAMPLE.value}
+    example_content = load_example(file=Path(file))
+    example_lines = example_content.splitlines() + [""]
+    example_lines = example_lines[start:end]
+    if start != 0:
+        config["start"] = start
+    if end > -1:
+        config["end"] = end
+
+    replace_block = f"<!-- {json.dumps(config)} -->\n"
+    replace_block += "```python\n"
+    replace_block += "\n".join(example_lines)
+    replace_block += "\n```\n"
     return content.replace(block, replace_block)
 
 
 def sub_exec(
     content: str,
     directory: str,
-    block: str,
     read: str,
+    block: str,
 ) -> str:
     """Substitute block with output from the command execution."""
-    _, cmd_str, *_ = block.split("\n")
+    _, _, cmd_str, *_ = block.split("\n")
     cmd = cmd_str.split(" ")[1:]
     process = subprocess.Popen(
         args=cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=directory
@@ -135,18 +111,14 @@ def sub_exec(
         if read == "stdout"
         else process.stderr.read().decode()
     )
-    replace_block = (
-        "```bash !!exec:"
-        + directory
-        + ":"
-        + read
-        + "\n"
-        + "$ "
-        + " ".join(cmd)
-        + "\n\n"
-        + result
-        + "```\n"
-    )
+    config = {"type": BlockType.EXEC.value, "directory": directory, "read": read}
+    replace_block = f"<!-- {json.dumps(config)} -->\n"
+    replace_block += "```bash\n"
+    replace_block += f"$ "
+    replace_block += " ".join(cmd)
+    replace_block += "\n\n"
+    replace_block += result
+    replace_block += "```\n"
     return content.replace(block, replace_block)
 
 
@@ -203,7 +175,9 @@ def sub(
         except ValueError as e:
             errors.append(str(e))
     if len(errors) > 0:
-        raise CleaException(message="\n - ".join(["Documentation check failed", *errors]))
+        raise CleaException(
+            message="\n - ".join(["Documentation check failed", *errors])
+        )
 
 
 if __name__ == "__main__":
