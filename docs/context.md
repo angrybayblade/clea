@@ -4,8 +4,14 @@ Whenever a command is executed, a runtime object is created which holds state fo
 
 Context object provides a simple key-value data store for storing and retrieving data across the execution.
 
+<!-- {"file": "examples/context.py", "type": "example"} -->
 ```python
-from clea import Context, run, group
+"""Context example."""
+
+from clea.context import Context
+from clea.runner import run
+from clea.wrappers import group
+
 
 @group
 def admin(context: Context) -> None:
@@ -34,9 +40,14 @@ if __name__ == "__main__":
 
 You can define a custom context for tasks such as loading and storing application config.
 
+<!-- {"file": "examples/custom_context.py", "type": "example"} -->
 ```python
-from clea import run, command
-from clea import Context as BaseContext
+"""Custom context example."""
+
+from clea.context import Context as BaseContext
+from clea.runner import run
+from clea.wrappers import command
+
 
 class Context(BaseContext):
     """Custom context object"""

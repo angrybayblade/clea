@@ -1,6 +1,6 @@
 ## Introduction
 
-Clea is a light weight application framework for creating CLI applications in python. Clea is uses type annotations to generate the command/group defintions and parse the arguments at the runtime. To start with clea run
+Clea is a framework for creating CLI applications in python very quickly. Clea uses type annotations for defining arguments. To start with clea run
 
 ## Install
 
@@ -10,12 +10,16 @@ pip3 install clea
 
 ## Quickstart
 
-Define you first command using 
+Define your first application 
 
+<!-- {"file": "examples/add.py", "type": "example"} -->
 ```python
+"""Simple add program."""
+
 from typing_extensions import Annotated
 
-from clea import Integer, command
+from clea import Integer, command, run
+
 
 @command
 def add(
@@ -25,35 +29,15 @@ def add(
     """Add two numbers"""
 
     print(f"Total {n1 + n2}")
-```
 
-Invoke the command at runtime using
-
-```python
-from clea import run
 
 if __name__ == "__main__":
     run(cli=add)
 ```
 
-> The example is taken from [add.py](https://github.com/angrybayblade/clea/blob/main/examples/add.py) in the examples folder.
-
-You can check the command definition using 
-
-```bash
-$ python add.py --help
-
-Usage: add [OPTIONS] N1 N2
-
-        Add two numbers
-
-Options:
-
-    --help                        Show help and exit.
-```
-
 Execute the command using
 
+<!-- {"type": "exec", "directory": "examples/", "read": "stdout"} -->
 ```bash
 $ python add.py 2 3
 
