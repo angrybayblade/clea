@@ -63,6 +63,8 @@ jobs:
         run: tox -e mypy
       - name: Pylint
         run: tox -e pylint
+      - name: Documentation checks
+        run: tox -e docs-block-check
 
   test:
     continue-on-error: True

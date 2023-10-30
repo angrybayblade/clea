@@ -1,12 +1,6 @@
-## Testing clea applications
-
-To test a clea application you can use the `isolated` flag in the `clea.runner.run` method. For example, to test the `add.py`
-
-<!-- {"file": "tests/test_examples/test_add.py", "type": "example"} -->
-```python
 """Test add.py"""
 
-from examples.add import add as cli
+from examples.add_numbers import add as cli
 from clea.runner import run
 
 
@@ -25,4 +19,3 @@ def test_add() -> None:
     result = run(cli=cli, argv=["1", "2"], isolated=True)
     assert result.exit_code == 0
     assert "Total 3" in result.stdout
-```

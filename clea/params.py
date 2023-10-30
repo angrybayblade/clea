@@ -109,9 +109,14 @@ class Parameter(t.Generic[ParameterType]):
         """Help string."""
         if self.short_flag is not None:
             help_string = f"{self.short_flag}, "
+            if self.long_flag is not None:
+                help_string += f"{self.long_flag}, "
+            help_string = help_string[:-2]
         else:  # pragma: nocover
             help_string = ""
-        help_string += f"{self.long_flag}"
+            if self.long_flag is not None:
+                help_string += f"{self.long_flag}"
+
         if self._help is not None:
             help_string += " " * (HELP_COL_LENGTH - len(help_string))
             help_string += self._help
@@ -182,12 +187,16 @@ class StringList(Parameter[t.List[str]]):
         return self.container
 
     def help(self) -> str:
-        """Help string."""
         if self.short_flag is not None:
             help_string = f"{self.short_flag}, "
-        else:
-            help_string = ""  # pragma: nocover
-        help_string += f"{self.long_flag}"
+            if self.long_flag is not None:
+                help_string += f"{self.long_flag}, "
+            help_string = help_string[:-2]
+        else:  # pragma: nocover
+            help_string = ""
+            if self.long_flag is not None:
+                help_string += f"{self.long_flag}"
+
         if self._help is not None:
             help_string += " " * (HELP_COL_LENGTH - len(help_string))
             help_string += self._help
@@ -230,9 +239,14 @@ class Choice(Parameter[Enum]):
         """Help string."""
         if self.short_flag is not None:
             help_string = f"{self.short_flag}, "
-        else:
-            help_string = ""  # pragma: nocover
-        help_string += f"{self.long_flag}"
+            if self.long_flag is not None:
+                help_string += f"{self.long_flag}, "
+            help_string = help_string[:-2]
+        else:  # pragma: nocover
+            help_string = ""
+            if self.long_flag is not None:
+                help_string += f"{self.long_flag}"
+
         choices = "|".join(list(map(lambda x: x.value, self.enum)))
         help_string += f"  [{choices}]"
         if self._help is not None:

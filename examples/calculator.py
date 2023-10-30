@@ -3,9 +3,7 @@
 
 from typing_extensions import Annotated
 
-from clea.params import Boolean, Integer
-from clea.runner import run
-from clea.wrappers import group
+from clea import Boolean, Integer, group, run
 
 
 @group
