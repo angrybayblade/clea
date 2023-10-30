@@ -197,7 +197,6 @@ class StringList(Parameter[t.List[str]]):
             if self.long_flag is not None:
                 help_string += f"{self.long_flag}"
 
-        help_string += f"{self.long_flag}"
         if self._help is not None:
             help_string += " " * (HELP_COL_LENGTH - len(help_string))
             help_string += self._help
