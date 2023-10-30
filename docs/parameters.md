@@ -8,11 +8,7 @@ For example
 
 ```python
 from typing_extensions import Annotated
-
-from clea.params import Integer
-from clea.runner import run
-from clea.wrappers import command
-
+from clea import Integer, run, command
 
 @command
 def add(
@@ -82,9 +78,7 @@ Take an `integer/float/string` as an argument.
 ```python
 (...)
 
-from clea.params import Integer, String, Float
-(...)
-
+from clea import Integer, String, Float
 
 @command(name="print")
 def _print(
@@ -123,7 +117,7 @@ The boolean flags do not require any input and they're considered as an `optiona
 ```python
 (...)
 
-from clea.params import Boolean
+from clea import Boolean
 (...)
 
 
@@ -156,14 +150,14 @@ flag=True
 
 ## List of strings
 
-To take a list of strings as an argument you can use `clea.params.StringList` parameter.
+To take a list of strings as an argument you can use `clea.StringList` parameter.
 
 ```python
 from typing import List
 
 (...)
 
-from clea.params import StringList
+from clea import StringList
 (...)
 
 
@@ -196,7 +190,7 @@ strings=['Hello', 'World', 'Foo Bar']
 
 ## Choice
 
-You can utilise `enum.Enum` and `clea.params.Choice` to create a choice paramters which will let the user choose from available enum values.
+You can utilise `enum.Enum` and `clea.Choice` to create a choice paramters which will let the user choose from available enum values.
 
 
 ```python
@@ -205,7 +199,7 @@ from typing import List
 
 (...)
 
-from clea.params import Choice
+from clea import Choice
 (...)
 
 
@@ -244,7 +238,7 @@ Error parsing value for <CTYPE type=Enum>; Provided value=tc; Expected value fro
 
 ## ChoiceByFlag
 
-You can also define a `Choice` parameter which uses flags for each choice available to take the input using `clea.params.ChoiceByFlag` param.
+You can also define a `Choice` parameter which uses flags for each choice available to take the input using `clea.ChoiceByFlag` param.
 
 ```python
 from enum import Enum
@@ -252,7 +246,7 @@ from typing import List
 
 (...)
 
-from clea.params import ChoiceByFlag
+from clea import ChoiceByFlag
 (...)
 
 
@@ -298,14 +292,14 @@ ctype=<ConnectionType.TCP: 'tcp'>
 
 ## File
 
-Use `clea.params.File` to take a file path as an argument. The path string will be parsed as `pathlib.Path` object.
+Use `clea.File` to take a file path as an argument. The path string will be parsed as `pathlib.Path` object.
 
 ```python
 from pathlib import Path
 
 (...)
 
-from clea.params import File
+from clea import File
 (...)
 
 
@@ -345,14 +339,14 @@ certificate=PosixPath('cert.pem')
 
 ## Directory
 
-Use `clea.params.Directory` to take a directory as an argument. The path string will be parsed as `pathlib.Path` object.
+Use `clea.Directory` to take a directory as an argument. The path string will be parsed as `pathlib.Path` object.
 
 ```python
 from pathlib import Path
 
 (...)
 
-from clea.params import Directory
+from clea import Directory
 (...)
 
 

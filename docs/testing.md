@@ -4,7 +4,7 @@ To test a clea application you can use the `isolated` flag in the `clea.runner.r
 
 ```python
 from examples.add import add as cli
-from clea.runner import run
+from clea import run
 
 
 def test_missing_arguments() -> None:

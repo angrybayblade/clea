@@ -3,8 +3,7 @@
 ```python
 from typing_extensions import Annotated
 
-from clea.params import Integer
-from clea.wrappers import command
+from clea import Integer, command
 
 @command
 def add(
@@ -19,7 +18,7 @@ def add(
 Invoke the command at runtime using
 
 ```python
-from clea.runner import run
+from clea import run
 
 if __name__ == "__main__":
     run(cli=add)

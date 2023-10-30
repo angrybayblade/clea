@@ -3,9 +3,7 @@
 Define you first command group using 
 
 ```python
-from clea.runner import run
-from clea.wrappers import group
-from clea.params import Integer, Boolean
+from clea import run, group, Integer, Boolean
 
 from typing_extensions import Annotated
 
