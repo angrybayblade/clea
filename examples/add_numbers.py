@@ -1,11 +1,11 @@
-"""Simple add program."""
+"""Simple add program with custom command name."""
 
 from typing_extensions import Annotated
 
 from clea import Integer, command, run
 
 
-@command
+@command(name="add-numbers")
 def add(
     n1: Annotated[int, Integer()],
     n2: Annotated[int, Integer()],
