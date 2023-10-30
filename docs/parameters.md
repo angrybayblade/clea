@@ -242,7 +242,7 @@ $ python command.py tc
 Error parsing value for <CTYPE type=Enum>; Provided value=tc; Expected value from {'tcp', 'udp'}
 ```
 
-## Choice using flag
+## ChoiceByFlag
 
 You can also define a `Choice` parameter which uses flags for each choice available to take the input using `clea.params.ChoiceByFlag` param.
 
@@ -296,7 +296,101 @@ $ python command.py --tcp
 ctype=<ConnectionType.TCP: 'tcp'>
 ```
 
-## Next steps 
+## File
+
+Use `clea.params.File` to take a file path as an argument. The path string will be parsed as `pathlib.Path` object.
+
+```python
+from pathlib import Path
+
+(...)
+
+from clea.params import File
+(...)
+
+
+@command(name="print")
+def _print(
+    certificate: Annotated[Path, File("-c", help="Path to certificate file.")],
+) -> None:
+    """Take arguments and print them on console."""
+
+    print(f"{certificate=}")
+
+(...)
+```
+
+Help output
+
+```
+$ python command.py --help
+
+Usage: print [OPTIONS] 
+
+        Take arguments and print them on console.
+
+Options:
+
+    -c                            Path to certificate file.
+    --help                        Show help and exit.
+```
+
+Running the command
+
+```
+$ python command.py -c=cert.pem
+
+certificate=PosixPath('cert.pem')
+```
+
+## Directory
+
+Use `clea.params.Directory` to take a directory as an argument. The path string will be parsed as `pathlib.Path` object.
+
+```python
+from pathlib import Path
+
+(...)
+
+from clea.params import Directory
+(...)
+
+
+@command(name="print")
+def _print(
+    build_dir: Annotated[Path, Directory("-b", help="Path to build directory.")],
+) -> None:
+    """Take arguments and print them on console."""
+
+    print(f"{build_dir=}")
+
+(...)
+```
+
+Help output
+
+```
+$ python command.py --help
+
+Usage: print [OPTIONS] 
+
+        Take arguments and print them on console.
+
+Options:
+
+    -b                            Path to build directory.
+    --help                        Show help and exit.
+```
+
+Running the command
+
+```
+$ python command.py -b=path/to/build
+
+certificate=PosixPath('path/to/build')
+```
+
+## Next steps
 
 - [Context](/clea/context)
 - [Testing](/clea/testing)
