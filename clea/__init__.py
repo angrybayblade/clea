@@ -18,3 +18,4 @@ from .params import (  # noqa: F401
 )
 from .runner import run  # noqa: F401
 from .wrappers import command, group  # noqa: F401
+from .exceptions import CleaException  # noqa: F401
