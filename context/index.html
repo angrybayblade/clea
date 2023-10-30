@@ -109,7 +109,11 @@
 <p>Whenever a command is executed, a runtime object is created which holds state for this particular invocation. You can utilise this context object for maintining a state for the command execution.</p>
 <h2 id="data-store">Data store</h2>
 <p>Context object provides a simple key-value data store for storing and retrieving data across the execution.</p>
-<pre><code class="language-python">from clea.context import Context
+<!-- {"file": "examples/context.py", "type": "example"} -->
+
+<pre><code class="language-python">&quot;&quot;&quot;Context example.&quot;&quot;&quot;
+
+from clea.context import Context
 from clea.runner import run
 from clea.wrappers import group
 
@@ -138,7 +142,11 @@ if __name__ == &quot;__main__&quot;:
 </code></pre>
 <h2 id="custom-context">Custom context</h2>
 <p>You can define a custom context for tasks such as loading and storing application config.</p>
-<pre><code class="language-python">from clea.context import Context as BaseContext
+<!-- {"file": "examples/custom_context.py", "type": "example"} -->
+
+<pre><code class="language-python">&quot;&quot;&quot;Custom context example.&quot;&quot;&quot;
+
+from clea.context import Context as BaseContext
 from clea.runner import run
 from clea.wrappers import command
 

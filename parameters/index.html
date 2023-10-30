@@ -112,7 +112,17 @@
               </ul>
             </li>
             
-            <li class="nav-item" data-level="2"><a href="#choice-using-flag" class="nav-link">Choice using flag</a>
+            <li class="nav-item" data-level="2"><a href="#choicebyflag" class="nav-link">ChoiceByFlag</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="2"><a href="#file" class="nav-link">File</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="2"><a href="#directory" class="nav-link">Directory</a>
               <ul class="nav flex-column">
               </ul>
             </li>
@@ -131,11 +141,7 @@
 <p>The default arguments don't need any explicit flags whereas the keyword arguments will require flag to be passed as an argument.</p>
 <p>For example</p>
 <pre><code class="language-python">from typing_extensions import Annotated
-
-from clea.params import Integer
-from clea.runner import run
-from clea.wrappers import command
-
+from clea import Integer, run, command
 
 @command
 def add(
@@ -183,9 +189,7 @@ Total 30
 <p>Take an <code>integer/float/string</code> as an argument.</p>
 <pre><code class="language-python">(...)
 
-from clea.params import Integer, String, Float
-(...)
-
+from clea import Integer, String, Float
 
 @command(name=&quot;print&quot;)
 def _print(
@@ -216,7 +220,7 @@ Options:
 <p>The boolean flags do not require any input and they're considered as an <code>optional/keyword</code> argument with default value being <code>False</code> if not set to <code>True</code> explicitly. Providing the flag as an CLI argument will negate the default value and use it as the argument value when calling the function, which means if the default is set to <code>False</code> and you provide the flag when running the command the value will be set to <code>True</code> and vice versa.</p>
 <pre><code class="language-python">(...)
 
-from clea.params import Boolean
+from clea import Boolean
 (...)
 
 
@@ -241,12 +245,12 @@ flag=False
 flag=True
 </code></pre>
 <h2 id="list-of-strings">List of strings</h2>
-<p>To take a list of strings as an argument you can use <code>clea.params.StringList</code> parameter.</p>
+<p>To take a list of strings as an argument you can use <code>clea.StringList</code> parameter.</p>
 <pre><code class="language-python">from typing import List
 
 (...)
 
-from clea.params import StringList
+from clea import StringList
 (...)
 
 
@@ -271,13 +275,13 @@ strings=[]
 strings=['Hello', 'World', 'Foo Bar']
 </code></pre>
 <h2 id="choice">Choice</h2>
-<p>You can utilise <code>enum.Enum</code> and <code>clea.params.Choice</code> to create a choice paramters which will let the user choose from available enum values.</p>
+<p>You can utilise <code>enum.Enum</code> and <code>clea.Choice</code> to create a choice paramters which will let the user choose from available enum values.</p>
 <pre><code class="language-python">from enum import Enum
 from typing import List
 
 (...)
 
-from clea.params import Choice
+from clea import Choice
 (...)
 
 
@@ -307,14 +311,14 @@ ctype=&lt;ConnectionType.TCP: 'tcp'&gt;
 
 Error parsing value for &lt;CTYPE type=Enum&gt;; Provided value=tc; Expected value from {'tcp', 'udp'}
 </code></pre>
-<h2 id="choice-using-flag">Choice using flag</h2>
-<p>You can also define a <code>Choice</code> parameter which uses flags for each choice available to take the input using <code>clea.params.ChoiceByFlag</code> param.</p>
+<h2 id="choicebyflag">ChoiceByFlag</h2>
+<p>You can also define a <code>Choice</code> parameter which uses flags for each choice available to take the input using <code>clea.ChoiceByFlag</code> param.</p>
 <pre><code class="language-python">from enum import Enum
 from typing import List
 
 (...)
 
-from clea.params import ChoiceByFlag
+from clea import ChoiceByFlag
 (...)
 
 
@@ -350,6 +354,80 @@ Options:
 <pre><code>$ python command.py --tcp
 
 ctype=&lt;ConnectionType.TCP: 'tcp'&gt;
+</code></pre>
+<h2 id="file">File</h2>
+<p>Use <code>clea.File</code> to take a file path as an argument. The path string will be parsed as <code>pathlib.Path</code> object.</p>
+<pre><code class="language-python">from pathlib import Path
+
+(...)
+
+from clea import File
+(...)
+
+
+@command(name=&quot;print&quot;)
+def _print(
+    certificate: Annotated[Path, File(&quot;-c&quot;, help=&quot;Path to certificate file.&quot;)],
+) -&gt; None:
+    &quot;&quot;&quot;Take arguments and print them on console.&quot;&quot;&quot;
+
+    print(f&quot;{certificate=}&quot;)
+
+(...)
+</code></pre>
+<p>Help output</p>
+<pre><code>$ python command.py --help
+
+Usage: print [OPTIONS] 
+
+        Take arguments and print them on console.
+
+Options:
+
+    -c                            Path to certificate file.
+    --help                        Show help and exit.
+</code></pre>
+<p>Running the command</p>
+<pre><code>$ python command.py -c=cert.pem
+
+certificate=PosixPath('cert.pem')
+</code></pre>
+<h2 id="directory">Directory</h2>
+<p>Use <code>clea.Directory</code> to take a directory as an argument. The path string will be parsed as <code>pathlib.Path</code> object.</p>
+<pre><code class="language-python">from pathlib import Path
+
+(...)
+
+from clea import Directory
+(...)
+
+
+@command(name=&quot;print&quot;)
+def _print(
+    build_dir: Annotated[Path, Directory(&quot;-b&quot;, help=&quot;Path to build directory.&quot;)],
+) -&gt; None:
+    &quot;&quot;&quot;Take arguments and print them on console.&quot;&quot;&quot;
+
+    print(f&quot;{build_dir=}&quot;)
+
+(...)
+</code></pre>
+<p>Help output</p>
+<pre><code>$ python command.py --help
+
+Usage: print [OPTIONS] 
+
+        Take arguments and print them on console.
+
+Options:
+
+    -b                            Path to build directory.
+    --help                        Show help and exit.
+</code></pre>
+<p>Running the command</p>
+<pre><code>$ python command.py -b=path/to/build
+
+certificate=PosixPath('path/to/build')
 </code></pre>
 <h2 id="next-steps">Next steps</h2>
 <ul>

@@ -92,11 +92,6 @@
               </ul>
             </li>
             
-            <li class="nav-item" data-level="2"><a href="#with-custom-name" class="nav-link">With custom name</a>
-              <ul class="nav flex-column">
-              </ul>
-            </li>
-            
             <li class="nav-item" data-level="2"><a href="#next-steps" class="nav-link">Next steps</a>
               <ul class="nav flex-column">
               </ul>
@@ -107,12 +102,14 @@
                     <div class="col-md-9" role="main">
 
 <h2 id="define-a-group">Define a group</h2>
-<p>Define you first command group using </p>
-<pre><code class="language-python">from clea.runner import run
-from clea.wrappers import group
-from clea.params import Integer, Boolean
+<!-- {"file": "examples/calculator.py", "type": "example"} -->
+
+<pre><code class="language-python">&quot;&quot;&quot;Calculator example.&quot;&quot;&quot;
+
 
 from typing_extensions import Annotated
+
+from clea import Boolean, Integer, group, run
 
 
 @group
@@ -130,53 +127,52 @@ def add(
     print(f&quot;Answer {n1+n2}&quot;)
 
 
-if __name__ == &quot;__main__&quot;:
-    run(cli=calculator)
-</code></pre>
-<blockquote>
-<p>The example is taken from <a href="https://github.com/angrybayblade/clea/blob/main/examples/calculator.py">calculator.py</a> in the examples folder.</p>
-</blockquote>
-<p>You can check the command definition using </p>
-<pre><code class="language-bash">Usage: calculator [OPTIONS] 
-
-        CLI Calculator app.
-
-Options:
-
-    --help                        Show help and exit.
-
-Commands:
-
-    add                           Add two numbers.
-</code></pre>
-<p>Execute the command using</p>
-<pre><code class="language-bash">$ python calculator.py add 2 3
-
-Answer 5
-</code></pre>
-<h2 id="with-custom-name">With custom name</h2>
-<pre><code class="language-python">(...)
-
-@group(name=&quot;calculator-app&quot;)
-def calculator() -&gt; None:
-    &quot;&quot;&quot;CLI Calculator app.&quot;&quot;&quot;
-
-
 @calculator.command
-def add(
+def subtract(
     n1: Annotated[int, Integer()],
     n2: Annotated[int, Integer()],
 ) -&gt; None:
-    &quot;&quot;&quot;Add two numbers.&quot;&quot;&quot;
+    &quot;&quot;&quot;Subtract two numbers.&quot;&quot;&quot;
 
-(...)
+    print(f&quot;Answer {n1-n2}&quot;)
+
+
+@calculator.command
+def multiply(
+    n1: Annotated[int, Integer()],
+    n2: Annotated[int, Integer()],
+) -&gt; None:
+    &quot;&quot;&quot;Multiply two numbers.&quot;&quot;&quot;
+
+    print(f&quot;Answer {n1*n2}&quot;)
+
+
+@calculator.command
+def devide(
+    n1: Annotated[int, Integer()],
+    n2: Annotated[int, Integer()],
+    round: Annotated[  # pylint: disable=redefined-builtin
+        bool, Boolean(help=&quot;Round up the answer&quot;)
+    ],
+) -&gt; None:
+    &quot;&quot;&quot;Devide two numbers.&quot;&quot;&quot;
+
+    if round:
+        print(f&quot;Answer {n1//n2}&quot;)
+    else:
+        print(f&quot;Answer {n1/n2}&quot;)
+
+
+if __name__ == &quot;__main__&quot;:
+    run(cli=calculator)
 </code></pre>
-<p>The custom name will show up as the group name</p>
+<!-- {"type": "exec", "directory": "examples/", "read": "stdout"} -->
+
 <pre><code class="language-bash">$ python calculator.py --help
 
-Usage: calculator-app [OPTIONS] 
+Usage: calculator [OPTIONS] 
 
-        CLI Calculator app.
+    CLI Calculator app.
 
 Options:
 
@@ -185,6 +181,16 @@ Options:
 Commands:
 
     add                           Add two numbers.
+    subtract                      Subtract two numbers.
+    multiply                      Multiply two numbers.
+    devide                        Devide two numbers.
+</code></pre>
+<p>Running the application</p>
+<!-- {"type": "exec", "directory": "examples/", "read": "stdout"} -->
+
+<pre><code class="language-bash">$ python calculator.py add 2 3
+
+Answer 5
 </code></pre>
 <h2 id="next-steps">Next steps</h2>
 <ul>

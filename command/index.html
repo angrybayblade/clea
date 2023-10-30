@@ -107,10 +107,14 @@
                     <div class="col-md-9" role="main">
 
 <h2 id="define-a-command">Define a command</h2>
-<pre><code class="language-python">from typing_extensions import Annotated
+<!-- {"file": "examples/add.py", "type": "example"} -->
 
-from clea.params import Integer
-from clea.wrappers import command
+<pre><code class="language-python">&quot;&quot;&quot;Simple add program.&quot;&quot;&quot;
+
+from typing_extensions import Annotated
+
+from clea import Integer, command, run
+
 
 @command
 def add(
@@ -120,55 +124,42 @@ def add(
     &quot;&quot;&quot;Add two numbers&quot;&quot;&quot;
 
     print(f&quot;Total {n1 + n2}&quot;)
-</code></pre>
-<p>Invoke the command at runtime using</p>
-<pre><code class="language-python">from clea.runner import run
+
 
 if __name__ == &quot;__main__&quot;:
     run(cli=add)
 </code></pre>
-<blockquote>
-<p>The example is taken from <a href="https://github.com/angrybayblade/clea/blob/main/examples/add.py">add.py</a> in the examples folder.</p>
-</blockquote>
-<p>You can check the command definition using </p>
+<p><em>The example is taken from <a href="https://github.com/angrybayblade/clea/blob/main/examples/add.py">add.py</a> in the examples folder.</em></p>
+<!-- {"type": "exec", "directory": "examples/", "read": "stdout"} -->
+
 <pre><code class="language-bash">$ python add.py --help
 
 Usage: add [OPTIONS] N1 N2
 
-        Add two numbers
+    Add two numbers
 
 Options:
 
     --help                        Show help and exit.
 </code></pre>
-<p>Execute the command using</p>
+<p>Running the application</p>
+<!-- {"type": "exec", "directory": "examples/", "read": "stdout"} -->
+
 <pre><code class="language-bash">$ python add.py 2 3
 
 Total 5
 </code></pre>
 <h2 id="with-custom-name">With custom name</h2>
-<pre><code class="language-python">(...)
+<!-- {"file": "examples/add_numbers.py", "type": "example", "start": 7, "end": 15} -->
 
-@command(name=&quot;add-numbers&quot;)
+<pre><code class="language-python">@command(name=&quot;add-numbers&quot;)
 def add(
     n1: Annotated[int, Integer()],
     n2: Annotated[int, Integer()],
 ) -&gt; None:
     &quot;&quot;&quot;Add two numbers&quot;&quot;&quot;
-    print (f&quot;Total: {n1+n2}&quot;)
 
-(...)
-</code></pre>
-<p>The custom name will show up as the command name</p>
-<pre><code class="language-bash">$ python add.py --help
-
-Usage: add-numbers [OPTIONS] N1 N2
-
-        Add two numbers
-
-Options:
-
-    --help                        Show help and exit.
+    print(f&quot;Total {n1 + n2}&quot;)
 </code></pre>
 <h2 id="next-steps">Next steps</h2>
 <ul>

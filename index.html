@@ -102,16 +102,20 @@
                     <div class="col-md-9" role="main">
 
 <h2 id="introduction">Introduction</h2>
-<p>Clea is a light weight application framework for creating CLI applications in python. Clea is uses type annotations to generate the command/group defintions and parse the arguments at the runtime. To start with clea run</p>
+<p>Clea is a framework for creating CLI applications in python very quickly. Clea uses type annotations for defining arguments. To start with clea run</p>
 <h2 id="install">Install</h2>
 <pre><code>pip3 install clea
 </code></pre>
 <h2 id="quickstart">Quickstart</h2>
-<p>Define you first command using </p>
-<pre><code class="language-python">from typing_extensions import Annotated
+<p>Define your first application </p>
+<!-- {"file": "examples/add.py", "type": "example"} -->
 
-from clea.params import Integer
-from clea.wrappers import command
+<pre><code class="language-python">&quot;&quot;&quot;Simple add program.&quot;&quot;&quot;
+
+from typing_extensions import Annotated
+
+from clea import Integer, command, run
+
 
 @command
 def add(
@@ -121,28 +125,14 @@ def add(
     &quot;&quot;&quot;Add two numbers&quot;&quot;&quot;
 
     print(f&quot;Total {n1 + n2}&quot;)
-</code></pre>
-<p>Invoke the command at runtime using</p>
-<pre><code class="language-python">from clea.runner import run
+
 
 if __name__ == &quot;__main__&quot;:
     run(cli=add)
 </code></pre>
-<blockquote>
-<p>The example is taken from <a href="https://github.com/angrybayblade/clea/blob/main/examples/add.py">add.py</a> in the examples folder.</p>
-</blockquote>
-<p>You can check the command definition using </p>
-<pre><code class="language-bash">$ python add.py --help
-
-Usage: add [OPTIONS] N1 N2
-
-        Add two numbers
-
-Options:
-
-    --help                        Show help and exit.
-</code></pre>
 <p>Execute the command using</p>
+<!-- {"type": "exec", "directory": "examples/", "read": "stdout"} -->
+
 <pre><code class="language-bash">$ python add.py 2 3
 
 Total 5
@@ -235,5 +225,5 @@ Total 5
 
 <!--
 MkDocs version : 1.5.3
-Build Date UTC : 2023-10-24 14:00:09.300940+00:00
+Build Date UTC : 2023-10-30 13:48:04.259694+00:00
 -->

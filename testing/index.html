@@ -98,7 +98,11 @@
 
 <h2 id="testing-clea-applications">Testing clea applications</h2>
 <p>To test a clea application you can use the <code>isolated</code> flag in the <code>clea.runner.run</code> method. For example, to test the <code>add.py</code></p>
-<pre><code class="language-python">from examples.add import add as cli
+<!-- {"file": "tests/test_examples/test_add.py", "type": "example"} -->
+
+<pre><code class="language-python">&quot;&quot;&quot;Test add.py&quot;&quot;&quot;
+
+from examples.add import add as cli
 from clea.runner import run
 
 
