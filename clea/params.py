@@ -403,6 +403,10 @@ class Directory(Parameter[Path]):
 class ContextParameter(Parameter[Context]):
     """Context parameter."""
 
+    def set(self, context: Context) -> None:
+        """Set context."""
+        self._default = context
+
 
 class VersionParameter(Parameter[str]):
     """Version parameter."""

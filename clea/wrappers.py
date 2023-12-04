@@ -48,8 +48,6 @@ class BaseWrapper:
         self.name = name or f.__name__
         self.version = version
         self.parent = parent
-        if self.parent is not None:
-            self.parent.add_child(self)
 
     def __call__(self, *args: t.Any, **kwds: t.Any) -> t.Any:
         """Call the base function.
@@ -80,6 +78,11 @@ class BaseWrapper:
             if isolated:
                 return 1
             raise
+
+    def set_context(self, context: Context) -> None:
+        """Set context."""
+        self.context = context
+        self._parser.set_context(context=context)
 
     def help(self) -> int:
         """
@@ -142,6 +145,8 @@ class Command(BaseWrapper):
             f=f, context=context, name=name, version=version, parent=parent
         )
         self._parser = parser
+        if self.parent is not None:
+            self.parent.add_child(self)
 
     def invoke(self, argv: Argv, isolated: bool = False) -> int:
         """Run the command.
@@ -282,19 +287,73 @@ class Group(BaseWrapper):
         :return: None
         """
         super().__init__(
-            f=f, context=context, name=name, version=version, parent=parent
+            f=f,
+            context=context,
+            name=name,
+            version=version,
+            parent=parent,
         )
 
-        self._parser = parser
         self._children = {}
+        self._parser = parser
         self._allow_direct_exec = allow_direct_exec
+        if self.parent is not None:
+            self.parent.add_child(self)
 
         self.command = partial(Command.wrap, parent=self, context=self.context)
         self.group = partial(self.wrap, parent=self, context=self.context)
 
-    def add_child(self, child: t.Any) -> None:
+    def add_child(self, child: t.Union[Command, "Group"]) -> None:
         """Add child node."""
+        if self.context is not None:
+            child.set_context(context=self.context)
         self._children[t.cast(BaseWrapper, child).name] = child
+
+    @classmethod
+    def _wrap(
+        cls,
+        f: t.Callable,
+        context: t.Optional[Context] = None,
+        version: t.Optional[str] = None,
+        **kwargs: t.Any,
+    ) -> "Group":
+        """
+        Decorator function to wrap a function as a command.
+
+        :param f: The function to be wrapped.
+        :type f: t.callable
+        :return: A `Command` object representing the wrapped function.
+        :rtype: Command
+        """
+        parser = GroupParser()
+        context = context or Context()
+        if version:
+            version_param = p.VersionParameter(
+                long_flag="--version",
+                help="Program version",
+            )
+            version_param.name = "version"
+            version_param.default = version
+            parser.add(version_param)
+        defaults_mapping, annotations = get_function_metadata(f=f)
+        for name, annotation in t.cast(t.Dict[str, Annotations], annotations).items():
+            if name == "return":
+                continue
+            if name == "context":
+                context_param = p.ContextParameter()
+                context_param.name = "context"
+                context_param.default = context
+                parser.add(defintion=context_param)
+                continue
+            (parameter,) = t.cast(
+                t.Tuple[p.Parameter, ...], getattr(annotation, "__metadata__")
+            )
+            default = defaults_mapping.get(name)
+            if default is not None:
+                parameter.default = default
+            parameter.name = name
+            parser.add(defintion=parameter)
+        return cls(f=f, parser=parser, context=context, version=version, **kwargs)
 
     @t.overload
     @classmethod
@@ -359,52 +418,6 @@ class Group(BaseWrapper):
             parent=parent,
             version=version,
         )
-
-    @classmethod
-    def _wrap(
-        cls,
-        f: t.Callable,
-        context: t.Optional[Context] = None,
-        version: t.Optional[str] = None,
-        **kwargs: t.Any,
-    ) -> "Group":
-        """
-        Decorator function to wrap a function as a command.
-
-        :param f: The function to be wrapped.
-        :type f: t.callable
-        :return: A `Command` object representing the wrapped function.
-        :rtype: Command
-        """
-        parser = GroupParser()
-        context = context or Context()
-        if version:
-            version_param = p.VersionParameter(
-                long_flag="--version",
-                help="Program version",
-            )
-            version_param.name = "version"
-            version_param.default = version
-            parser.add(version_param)
-        defaults_mapping, annotations = get_function_metadata(f=f)
-        for name, annotation in t.cast(t.Dict[str, Annotations], annotations).items():
-            if name == "return":
-                continue
-            if name == "context":
-                context_param = p.ContextParameter()
-                context_param.name = "context"
-                context_param.default = context
-                parser.add(defintion=context_param)
-                continue
-            (parameter,) = t.cast(
-                t.Tuple[p.Parameter, ...], getattr(annotation, "__metadata__")
-            )
-            default = defaults_mapping.get(name)
-            if default is not None:
-                parameter.default = default
-            parameter.name = name
-            parser.add(defintion=parameter)
-        return cls(f=f, parser=parser, context=context, version=version, **kwargs)
 
     def invoke(self, argv: Argv, isolated: bool = False) -> int:
         """Run the command."""
