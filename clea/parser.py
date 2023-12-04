@@ -3,8 +3,9 @@
 import typing as t
 from collections import deque
 
+from clea.context import Context
 from clea.exceptions import ArgumentsMissing, ExtraArgumentProvided
-from clea.params import ChoiceByFlag, Parameter
+from clea.params import ChoiceByFlag, ContextParameter, Parameter
 
 
 Argv = t.List[str]
@@ -28,6 +29,11 @@ class BaseParser:
 
         self._kwargs = {}
         self._args = deque()
+
+    def set_context(self, context: Context) -> None:
+        """Set context."""
+        if "--context" in self._kwargs:
+            t.cast(ContextParameter, self._kwargs["--context"]).set(context=context)
 
     def get_arg_vars(self) -> t.List[str]:
         """Get a t.list of metavars."""
