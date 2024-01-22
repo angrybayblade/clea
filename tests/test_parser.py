@@ -34,7 +34,7 @@ class TestBaseFunctionality:
         parser.add(param)
 
         args, *_ = parser.parse(["hello"])
-        assert args == ["hello"]
+        assert args == {"param": "hello"}
 
     def test_missing_arg(self, Parser: t.Type[BaseParser]) -> None:
         """Test short flag parsing."""
@@ -59,14 +59,14 @@ class TestBaseFunctionality:
         """Test short flag parsing."""
         parser = Parser()
         parser.add(defintion=self.get_param())
-        _, kwargs, *_ = parser.parse(["-p=bar"])
+        kwargs, *_ = parser.parse(["-p=bar"])
         assert kwargs == {"param": "bar"}
 
     def test_long_flag_parsing(self, Parser: t.Type[BaseParser]) -> None:
         """Test long flag parsing."""
         parser = Parser()
         parser.add(defintion=self.get_param())
-        _, kwargs, *_ = parser.parse(["--param=bar"])
+        kwargs, *_ = parser.parse(["--param=bar"])
         assert kwargs == {"param": "bar"}
 
     def test_extra_flag(self, Parser: t.Type[BaseParser]) -> None:
@@ -83,7 +83,7 @@ class TestBaseFunctionality:
         param.name = "param"
         parser.add(defintion=param)
 
-        _, kwargs, *_ = parser.parse(["-p=foo", "--param=bar"])
+        kwargs, *_ = parser.parse(["-p=foo", "--param=bar"])
         assert kwargs["param"] == ["foo", "bar"]
 
     def test_parse_switch(self, Parser: t.Type[BaseParser]) -> None:
@@ -93,7 +93,7 @@ class TestBaseFunctionality:
         param.name = "param"
         parser.add(defintion=param)
 
-        _, kwargs, *_ = parser.parse(["--param"])
+        kwargs, *_ = parser.parse(["--param"])
         assert kwargs["param"] is True
 
     def test_parse_switch_default(self, Parser: t.Type[BaseParser]) -> None:
@@ -102,7 +102,7 @@ class TestBaseFunctionality:
         param = Boolean(long_flag="--param")
         param.name = "param"
         parser.add(defintion=param)
-        _, kwargs, *_ = parser.parse([])
+        kwargs, *_ = parser.parse([])
         assert kwargs["param"] is False
 
     def test_parse_version(self, Parser: t.Type[BaseParser]) -> None:
@@ -112,13 +112,13 @@ class TestBaseFunctionality:
         version.name = "version"
         parser.add(version)
 
-        _, _, _, version_only, *_ = parser.parse(["--version"])
+        _, _, version_only, *_ = parser.parse(["--version"])
         assert version_only is True
 
     def test_parse_help(self, Parser: t.Type[BaseParser]) -> None:
         """Test version argument."""
         parser = Parser()
-        _, _, help_only, _, *_ = parser.parse(["--help"])
+        _, help_only, _, *_ = parser.parse(["--help"])
         assert help_only is True
 
 
