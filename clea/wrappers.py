@@ -67,8 +67,12 @@ class BaseWrapper:
         kwargs: Kwargs,
         isolated: bool = False,
         help_only: bool = False,
+        version_only: bool = False,
     ) -> int:
         """Command for command function."""
+        if version_only:
+            print(self.version)
+            return 0
         if help_only:
             return self.help()
         try:
@@ -158,12 +162,13 @@ class Command(BaseWrapper):
         :return: 0 if the command runs successfully, 1 otherwise.
         :rtype: int
         """
-        args, kwargs, help_only, version_only = self._parser.copy().parse(argv=argv)
-        if version_only:
-            print(self.version)
-            return 0
+        kwargs, help_only, version_only = self._parser.copy().parse(argv=argv)
         return self._invoke(
-            args=args, kwargs=kwargs, isolated=isolated, help_only=help_only
+            args=[],
+            kwargs=kwargs,
+            isolated=isolated,
+            help_only=help_only,
+            version_only=version_only,
         )
 
     @t.overload
@@ -422,7 +427,6 @@ class Group(BaseWrapper):
     def invoke(self, argv: Argv, isolated: bool = False) -> int:
         """Run the command."""
         (
-            args,
             kwargs,
             help_only,
             version_only,
@@ -434,19 +438,23 @@ class Group(BaseWrapper):
             .parse(argv=argv, commands=self._children)
         )
 
-        if version_only:
-            print(self.version)
-            return 0
-
         if sub_command is not None:
             self._invoke(
-                args=args, kwargs=kwargs, isolated=isolated, help_only=help_only
+                args=[],
+                kwargs=kwargs,
+                isolated=isolated,
+                help_only=help_only,
+                version_only=version_only,
             )
             return sub_command.invoke(argv=sub_argv)
 
         if self._allow_direct_exec:
             return self._invoke(
-                args=args, kwargs=kwargs, isolated=isolated, help_only=help_only
+                args=[],
+                kwargs=kwargs,
+                isolated=isolated,
+                help_only=help_only,
+                version_only=version_only,
             )
 
         return self.help()

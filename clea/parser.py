@@ -14,8 +14,8 @@ Kwargs = t.Dict[str, t.Any]
 
 HelpOnly = bool
 VersionOnly = bool
-ParsedCommandArgs = t.Tuple[Args, Kwargs, HelpOnly, VersionOnly]
-ParsedGroupArgs = t.Tuple[Args, Kwargs, HelpOnly, VersionOnly, t.Any, Args]
+ParsedCommandArgs = t.Tuple[Kwargs, HelpOnly, VersionOnly]
+ParsedGroupArgs = t.Tuple[Kwargs, HelpOnly, VersionOnly, t.Any, Args]
 
 
 class BaseParser:
@@ -86,13 +86,12 @@ class CommandParser(BaseParser):
         self, argv: Argv, commands: t.Optional[t.Dict[str, t.Any]] = None
     ) -> ParsedCommandArgs:
         """Parse and return kwargs."""
-        args: Args = []
         kwargs: Kwargs = {}
         for arg in argv:
             if arg == "--help":
-                return args, kwargs, True, False
+                return kwargs, True, False
             if arg == "--version":
-                return args, kwargs, False, True
+                return kwargs, False, True
             if arg.startswith("-"):
                 if "=" in arg:
                     flag, value = arg.split("=")
@@ -113,7 +112,7 @@ class CommandParser(BaseParser):
                 if len(self._args) == 0:
                     raise ExtraArgumentProvided(f"Extra argument provided `{arg}`")
                 definition = self._args.popleft()
-                args.append(definition.parse(arg))
+                kwargs[definition.name] = definition.parse(arg)
 
         if len(self._args) > 0:
             self.raise_missing_args()
@@ -126,7 +125,7 @@ class CommandParser(BaseParser):
                     kwargs[kwarg.name] = kwarg.container
                 else:
                     kwargs[kwarg.name] = kwarg.default
-        return args, kwargs, False, False
+        return kwargs, False, False
 
     def copy(self) -> "CommandParser":
         """Create a copy of the object."""
@@ -144,7 +143,6 @@ class GroupParser(BaseParser):
     ) -> ParsedGroupArgs:
         """Parse and return kwargs."""
         commands = commands or {}
-        args: Args = []
         kwargs: Kwargs = {}
         sub_argv: Args = []
         sub_command: t.Any = None
@@ -155,9 +153,9 @@ class GroupParser(BaseParser):
                 sub_argv = argv[_i:]
                 break
             if arg == "--help":
-                return args, kwargs, True, False, None, argv
+                return kwargs, True, False, None, argv
             if arg == "--version":
-                return args, kwargs, False, True, None, argv
+                return kwargs, False, True, None, argv
             if arg.startswith("-"):
                 if "=" in arg:
                     flag, value = arg.split("=")
@@ -178,7 +176,7 @@ class GroupParser(BaseParser):
                 if len(self._args) == 0:
                     raise ExtraArgumentProvided(f"Extra argument provided `{arg}`")
                 definition = self._args.popleft()
-                args.append(definition.parse(arg))
+                kwargs[definition.name] = definition.parse(arg)
 
         if len(self._args) > 0:
             self.raise_missing_args()
@@ -191,7 +189,7 @@ class GroupParser(BaseParser):
                     kwargs[kwarg.name] = kwarg.container
                 else:
                     kwargs[kwarg.name] = kwarg.default
-        return args, kwargs, False, False, sub_command, sub_argv
+        return kwargs, False, False, sub_command, sub_argv
 
     def copy(self) -> "GroupParser":
         """Create a copy of the object."""
