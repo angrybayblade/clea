@@ -1,7 +1,9 @@
 site_name: Clea
-site_url: https://angrybayblade.me/clea
+site_url: http://clea.angrybayblade.me/
 repo_url: https://github.com/angrybayblade/clea/
 edit_uri: blob/main/docs/
+extra_css:
+  - style.css
 nav:
   - Command: command.md
   - Group: group.md
