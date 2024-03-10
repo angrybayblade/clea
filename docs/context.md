@@ -73,4 +73,4 @@ if __name__ == "__main__":
 
 ## Next steps 
 
-- [Testing](/clea/testing)
+- [Testing](/testing)

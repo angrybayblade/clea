@@ -96,6 +96,6 @@ Answer 5
 
 ## Next steps 
 
-- [Parameters](/clea/parameters)
-- [Context](/clea/context)
-- [Testing](/clea/testing)
+- [Parameters](/parameters)
+- [Context](/context)
+- [Testing](/testing)

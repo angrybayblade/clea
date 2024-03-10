@@ -46,6 +46,6 @@ Total 5
 
 ## Next steps 
 
-- [Command](/clea/command)
-- [Group](/clea/group)
-- [Parameters](/clea/parameters)
+- [Command](/command)
+- [Group](/group)
+- [Parameters](/parameters)

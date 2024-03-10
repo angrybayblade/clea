@@ -386,5 +386,5 @@ certificate=PosixPath('path/to/build')
 
 ## Next steps
 
-- [Context](/clea/context)
-- [Testing](/clea/testing)
+- [Context](/context)
+- [Testing](/testing)

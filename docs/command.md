@@ -63,5 +63,5 @@ def add(
 
 ## Next steps 
 
-- [Group](/clea/group)
-- [Parameters](/clea/parameters)
+- [Group](/group)
+- [Parameters](/parameters)
